@@ -51,7 +51,7 @@ public class GameManager : MonoBehaviour
                 g.GetComponent<GridPosition>().setColumn(k);
                 g.GetComponent<GridPosition>().setRow(i);
                 int row = i * -1;
-                g.transform.SetPositionAndRotation(new Vector2(k - 8, row + 1), Quaternion.identity);
+                g.transform.SetPositionAndRotation(new Vector2(k - 7, row + 1), Quaternion.identity);
                 componentGrid[i][k] = g;
             }
         }
@@ -190,13 +190,13 @@ public class GameManager : MonoBehaviour
                 n3 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
             }
             n3.GetComponent<GridPosition>().setRowColumn(2, topCol);
-            n3.transform.SetPositionAndRotation(new Vector2(topCol - 8, -1), Quaternion.identity);
+            n3.transform.SetPositionAndRotation(new Vector2(topCol - 7, -1), Quaternion.identity);
             componentGrid[2][topCol] = n3;
             n2.GetComponent<GridPosition>().setRowColumn(1, topCol);
-            n2.transform.SetPositionAndRotation(new Vector2(topCol - 8, 0), Quaternion.identity);
+            n2.transform.SetPositionAndRotation(new Vector2(topCol - 7, 0), Quaternion.identity);
             componentGrid[1][topCol] = n2;
             n1.GetComponent<GridPosition>().setRowColumn(0, topCol);
-            n1.transform.SetPositionAndRotation(new Vector2(topCol - 8, 1), Quaternion.identity);
+            n1.transform.SetPositionAndRotation(new Vector2(topCol - 7, 1), Quaternion.identity);
             componentGrid[0][topCol] = n1;
         }
         else // Otherwise match horizontally
@@ -226,9 +226,9 @@ public class GameManager : MonoBehaviour
                 componentGrid[i][frontCol+2] = null;
 
 
-                componentGrid[i + 1][frontCol].transform.SetPositionAndRotation(new Vector2(frontCol - 8,-i), Quaternion.identity);
-                componentGrid[i + 1][frontCol + 1].transform.SetPositionAndRotation(new Vector2(frontCol - 7, -i), Quaternion.identity);
-                componentGrid[i + 1][frontCol + 2].transform.SetPositionAndRotation(new Vector2(frontCol - 6, -i), Quaternion.identity);
+                componentGrid[i + 1][frontCol].transform.SetPositionAndRotation(new Vector2(frontCol - 7,-i), Quaternion.identity);
+                componentGrid[i + 1][frontCol + 1].transform.SetPositionAndRotation(new Vector2(frontCol - 6, -i), Quaternion.identity);
+                componentGrid[i + 1][frontCol + 2].transform.SetPositionAndRotation(new Vector2(frontCol - 5, -i), Quaternion.identity);
 
                 componentGrid[i + 1][frontCol].GetComponent<GridPosition>().setRowColumn(i + 1, frontCol);
                 componentGrid[i + 1][frontCol + 1].GetComponent<GridPosition>().setRowColumn(i + 1, frontCol + 1);
@@ -248,13 +248,13 @@ public class GameManager : MonoBehaviour
                 n3 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
             }
             n3.GetComponent<GridPosition>().setRowColumn(0, frontCol + 2);
-            n3.transform.SetPositionAndRotation(new Vector2(frontCol - 6, 1), Quaternion.identity);
+            n3.transform.SetPositionAndRotation(new Vector2(frontCol - 5, 1), Quaternion.identity);
             componentGrid[0][frontCol + 2] = n3;
             n2.GetComponent<GridPosition>().setRowColumn(0, frontCol + 1);
-            n2.transform.SetPositionAndRotation(new Vector2(frontCol - 7, 1), Quaternion.identity);
+            n2.transform.SetPositionAndRotation(new Vector2(frontCol - 6, 1), Quaternion.identity);
             componentGrid[0][frontCol + 1] = n2;
             n1.GetComponent<GridPosition>().setRowColumn(0, frontCol);
-            n1.transform.SetPositionAndRotation(new Vector2(frontCol - 8, 1), Quaternion.identity);
+            n1.transform.SetPositionAndRotation(new Vector2(frontCol - 7, 1), Quaternion.identity);
             componentGrid[0][frontCol] = n1;
         }
         return true;
