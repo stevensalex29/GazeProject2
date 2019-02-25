@@ -47,11 +47,12 @@ public class GameManager : MonoBehaviour
         {
             for (int k = 0; k < 6; k++)
             {
-                componentGrid[i][k] = getRandomJewel();
-                componentGrid[i][k].GetComponent<GridPosition>().setColumn(k);
-                componentGrid[i][k].GetComponent<GridPosition>().setRow(i);
+                GameObject g = Instantiate(getRandomJewel(), new Vector2(0,0), Quaternion.identity);
+                g.GetComponent<GridPosition>().setColumn(k);
+                g.GetComponent<GridPosition>().setRow(i);
                 int row = i * -1;
-                Instantiate(componentGrid[i][k], new Vector2(k-8,row+1), Quaternion.identity);
+                g.transform.SetPositionAndRotation(new Vector2(k - 8, row + 1), Quaternion.identity);
+                componentGrid[i][k] = g;
             }
         }
     }
@@ -94,9 +95,8 @@ public class GameManager : MonoBehaviour
             Destroy(selects[0]);
             Destroy(selects[1]);
 
-            //TODO THIS FUNCTION IS BROKE
             // Check for matches and match
-            //match(checkMatch(), firstSelected.GetComponent<GridPosition>().getRow(), firstSelected.GetComponent<GridPosition>().getColumn());
+            match(checkMatch(), firstSelected.GetComponent<GridPosition>().getRow(), firstSelected.GetComponent<GridPosition>().getColumn());
 
             // Set selected as null
             setFirstSelected(null);
@@ -105,43 +105,64 @@ public class GameManager : MonoBehaviour
     }
 
     // Finds match containing current row and column position
-    public List<GameObject> findCurrMatch(List<List<GameObject>> matches,int r, int c)
+    public string[] findCurrMatch(List<string[]> matches,int r, int c)
     {
         for (int i = 0; i < matches.Count; i++)
         {
-            List<GameObject> m = matches[i];
-            GameObject m0 = m[0];
-            GameObject m1 = m[1];
-            GameObject m2 = m[2];
-            if (m0.GetComponent<GridPosition>().getRow() == r && m0.GetComponent<GridPosition>().getColumn() == c) return m;
-            if (m1.GetComponent<GridPosition>().getRow() == r && m1.GetComponent<GridPosition>().getColumn() == c) return m;
-            if (m2.GetComponent<GridPosition>().getRow() == r && m2.GetComponent<GridPosition>().getColumn() == c) return m;
+            string[] m = matches[i];
+            int m0Row, m0Col, m1Row, m1Col, m2Row, m2Col;
+            m0Row = getStringRow(m[0]);
+            m1Row = getStringRow(m[1]);
+            m2Row = getStringRow(m[2]);
+            m0Col = getStringCol(m[0]);
+            m1Col = getStringCol(m[1]);
+            m2Col = getStringCol(m[2]);
+            if (m0Row == r && m0Col == c) return m;
+            if (m1Row == r && m1Col == c) return m;
+            if (m2Row == r && m2Col == c) return m;
         }
         return null;
     }
 
+    // Gets the row number from the string 
+    public int getStringRow(string s)
+    {
+        string[] pos = s.Split(',');
+        return int.Parse(pos[0]);
+    }
+
+    // Gets the column number from the string 
+    public int getStringCol(string s)
+    {
+        string[] pos = s.Split(',');
+        return int.Parse(pos[1]);
+    }
+
     // Invoke found matches
-    public void match(List<List<GameObject>> matches,int currR, int currC)
+    public void match(List<string[]> matches,int currR, int currC)
     {
         // Get current matched
-        List<GameObject> match = findCurrMatch(matches,currR,currC);
-        if (match == null) return;
+        string[] match = findCurrMatch(matches,currR,currC);
+        if (match==null) return;
 
-        if (match[0].GetComponent<GridPosition>().getColumn() == match[1].GetComponent<GridPosition>().getColumn())
+        if (getStringCol(match[0]) == getStringCol(match[1]))
         { // If in same column, match vertically
-            int topRow = match[0].GetComponent<GridPosition>().getRow();
-            int topCol = match[0].GetComponent<GridPosition>().getColumn();
-            Vector2 matchP1 = match[0].transform.position;
-            Vector2 matchP2 = match[1].transform.position;
-            Vector2 matchP3 = match[2].transform.position;
+            int topRow = getStringRow(match[0]);
+            int topCol = getStringCol(match[0]);
+            Vector2 matchP1 = componentGrid[topRow][topCol].transform.position;
+            Vector2 matchP2 = componentGrid[topRow + 1][topCol].transform.position;
+            Vector2 matchP3 = componentGrid[topRow + 2][topCol].transform.position;
             // Remove match from grid
+            GameObject match1 = componentGrid[topRow][topCol];
+            GameObject match2 = componentGrid[topRow+1][topCol];
+            GameObject match3 = componentGrid[topRow+2][topCol];
             componentGrid[topRow][topCol] = null;
             componentGrid[topRow + 1][topCol] = null;
             componentGrid[topRow + 2][topCol] = null;
-            // Remove game objects
-            Destroy(match[0]);
-            Destroy(match[1]);
-            Destroy(match[2]);
+            // Destroy matched on screen
+            Destroy(match1);
+            Destroy(match2);
+            Destroy(match3);
             // Move other objects down
             int bottomRow = topRow - 1;
             int p = 2;
@@ -152,41 +173,96 @@ public class GameManager : MonoBehaviour
                 if (p == 0) componentGrid[i + 3][topCol].transform.SetPositionAndRotation(matchP1, Quaternion.identity);
                 if (p == 1) componentGrid[i + 3][topCol].transform.SetPositionAndRotation(matchP2, Quaternion.identity);
                 if (p == 2) componentGrid[i + 3][topCol].transform.SetPositionAndRotation(matchP3, Quaternion.identity);
+                componentGrid[i + 3][topCol].GetComponent<GridPosition>().setRowColumn(i + 3, topCol);
                 p--;
             }
             // Replace top three with randoms
-            GameObject n1 = getRandomJewel();
-            GameObject n2 = getRandomJewel();
-            GameObject n3 = getRandomJewel();
+            GameObject n1 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
+            GameObject n2 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
+            GameObject n3 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
             while (n1.tag == n2.tag && n1.tag == n3.tag) // Keep jewels random
             {
-                n1 = getRandomJewel();
-                n2 = getRandomJewel();
-                n3 = getRandomJewel();
+                Destroy(n1);
+                Destroy(n2);
+                Destroy(n3);
+                n1 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
+                n2 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
+                n3 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
             }
             n3.GetComponent<GridPosition>().setRowColumn(2, topCol);
+            n3.transform.SetPositionAndRotation(new Vector2(topCol - 8, -1), Quaternion.identity);
             componentGrid[2][topCol] = n3;
-            Vector2 pos1 = new Vector2(topCol - 8, 3);
-            Instantiate(componentGrid[2][topCol], pos1, Quaternion.identity);
             n2.GetComponent<GridPosition>().setRowColumn(1, topCol);
+            n2.transform.SetPositionAndRotation(new Vector2(topCol - 8, 0), Quaternion.identity);
             componentGrid[1][topCol] = n2;
-            Vector2 pos2 = new Vector2(topCol - 8, 2);
-            Instantiate(componentGrid[1][topCol], pos2, Quaternion.identity);
             n1.GetComponent<GridPosition>().setRowColumn(0, topCol);
+            n1.transform.SetPositionAndRotation(new Vector2(topCol - 8, 1), Quaternion.identity);
             componentGrid[0][topCol] = n1;
-            Vector2 pos3 = new Vector2(topCol - 8, 1);
-            Instantiate(componentGrid[0][topCol], pos3, Quaternion.identity);
         }
         else // Otherwise match horizontally
         {
+            int frontCol= getStringCol(match[0]);
+            int topRow = getStringRow(match[0]);
+            // Remove match from grid
+            GameObject match1 = componentGrid[topRow][frontCol];
+            GameObject match2 = componentGrid[topRow][frontCol+1];
+            GameObject match3 = componentGrid[topRow][frontCol+2];
+            componentGrid[topRow][frontCol] = null;
+            componentGrid[topRow][frontCol+1] = null;
+            componentGrid[topRow][frontCol+2] = null;
+            // Destroy matched on screen
+            Destroy(match1);
+            Destroy(match2);
+            Destroy(match3);
+            // Move other objects down
+            int bottomRow = topRow - 1;
+            for (int i = bottomRow; i > -1; i--)
+            {
+                componentGrid[i + 1][frontCol] = componentGrid[i][frontCol];
+                componentGrid[i + 1][frontCol+1] = componentGrid[i][frontCol+1];
+                componentGrid[i + 1][frontCol + 2] = componentGrid[i][frontCol + 2];
+                componentGrid[i][frontCol] = null;
+                componentGrid[i][frontCol+1] = null;
+                componentGrid[i][frontCol+2] = null;
 
+
+                componentGrid[i + 1][frontCol].transform.SetPositionAndRotation(new Vector2(frontCol - 8,-i), Quaternion.identity);
+                componentGrid[i + 1][frontCol + 1].transform.SetPositionAndRotation(new Vector2(frontCol - 7, -i), Quaternion.identity);
+                componentGrid[i + 1][frontCol + 2].transform.SetPositionAndRotation(new Vector2(frontCol - 6, -i), Quaternion.identity);
+
+                componentGrid[i + 1][frontCol].GetComponent<GridPosition>().setRowColumn(i + 1, frontCol);
+                componentGrid[i + 1][frontCol + 1].GetComponent<GridPosition>().setRowColumn(i + 1, frontCol + 1);
+                componentGrid[i + 1][frontCol + 2].GetComponent<GridPosition>().setRowColumn(i + 1, frontCol + 2);
+            }
+            // Replace top three with randoms
+            GameObject n1 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
+            GameObject n2 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
+            GameObject n3 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
+            while (n1.tag == n2.tag && n1.tag == n3.tag) // Keep jewels random
+            {
+                Destroy(n1);
+                Destroy(n2);
+                Destroy(n3);
+                n1 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
+                n2 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
+                n3 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
+            }
+            n3.GetComponent<GridPosition>().setRowColumn(0, frontCol + 2);
+            n3.transform.SetPositionAndRotation(new Vector2(frontCol - 6, 1), Quaternion.identity);
+            componentGrid[0][frontCol + 2] = n3;
+            n2.GetComponent<GridPosition>().setRowColumn(0, frontCol + 1);
+            n2.transform.SetPositionAndRotation(new Vector2(frontCol - 7, 1), Quaternion.identity);
+            componentGrid[0][frontCol + 1] = n2;
+            n1.GetComponent<GridPosition>().setRowColumn(0, frontCol);
+            n1.transform.SetPositionAndRotation(new Vector2(frontCol - 8, 1), Quaternion.identity);
+            componentGrid[0][frontCol] = n1;
         }
     }
 
     // Check for Matches
-    public List<List<GameObject>> checkMatch()
+    public List<string[]> checkMatch()
     {
-        List<List<GameObject>> matches = new List<List<GameObject>>();
+        List<string[]> matches = new List<string[]>();
         // Check for horizontal matches
         for (int i = 0; i < 6; i++)
         {
@@ -198,10 +274,10 @@ public class GameManager : MonoBehaviour
                     if (tag == componentGrid[i][k + 1].tag && tag == componentGrid[i][k + 2].tag)
                     {
                         // Add match to list of matches
-                        List<GameObject> match = new List<GameObject>();
-                        match.Add(componentGrid[i][k]);
-                        match.Add(componentGrid[i][k+1]);
-                        match.Add(componentGrid[i][k+2]);
+                        string[] match = new string[3];
+                        match[0] = i + "," + k;
+                        match[1] = i + "," + (k + 1);
+                        match[2] = i + "," + (k + 2);
                         matches.Add(match);
                     }
                 }
@@ -220,10 +296,11 @@ public class GameManager : MonoBehaviour
                     if (tag == componentGrid[i + 1][k].tag && tag == componentGrid[i + 2][k].tag)
                     {
                         // Add match to list of matches
-                        List<GameObject> match = new List<GameObject>();
-                        match.Add(componentGrid[i][k]);
-                        match.Add(componentGrid[i + 1][k]);
-                        match.Add(componentGrid[i + 2][k]);
+                        // Add match to list of matches
+                        string[] match = new string[3];
+                        match[0] = i + "," + k;
+                        match[1] = (i + 1) + "," + k;
+                        match[2] = (i + 2) + "," + k;
                         matches.Add(match);
                     }
                 }
