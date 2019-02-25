@@ -24,6 +24,9 @@ public class Interaction : MonoBehaviour
         // Check if none selected yet, select first
         if (first == null)
         {
+            if(gm.match(gm.checkMatch(),gameObject.GetComponent<GridPosition>().getRow(), gameObject.GetComponent<GridPosition>().getColumn())){
+                return;
+            }
             gm.setFirstSelected(gameObject);
             Instantiate(select, gameObject.transform.position, Quaternion.identity);
         }else if(first != null && second == null) // If first selected, select second

@@ -139,11 +139,11 @@ public class GameManager : MonoBehaviour
     }
 
     // Invoke found matches
-    public void match(List<string[]> matches,int currR, int currC)
+    public bool match(List<string[]> matches,int currR, int currC)
     {
         // Get current matched
         string[] match = findCurrMatch(matches,currR,currC);
-        if (match==null) return;
+        if (match==null) return false;
 
         if (getStringCol(match[0]) == getStringCol(match[1]))
         { // If in same column, match vertically
@@ -257,6 +257,7 @@ public class GameManager : MonoBehaviour
             n1.transform.SetPositionAndRotation(new Vector2(frontCol - 8, 1), Quaternion.identity);
             componentGrid[0][frontCol] = n1;
         }
+        return true;
     }
 
     // Check for Matches
