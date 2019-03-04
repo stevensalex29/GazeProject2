@@ -13,7 +13,11 @@ public class GameManager : MonoBehaviour
     public GameObject purpleJewel;
     public GameObject whiteJewel;
     public GameObject greenJewel;
+	private float enemyHealth;
+	[SerializeField] private healthBar healthBar;
     GameObject[][] componentGrid;
+
+
     List<GameObject> jewels;
     GameObject firstSelected;
     GameObject secondSelected;
@@ -35,6 +39,8 @@ public class GameManager : MonoBehaviour
         componentGrid[3] = new GameObject[6];
         componentGrid[4] = new GameObject[6];
         componentGrid[5] = new GameObject[6];
+		enemyHealth = 1.0f;
+		//healthBar.SetSize (enemyHealth);
         // Create the starting grid for the level
         createGrid();
     }
@@ -257,6 +263,11 @@ public class GameManager : MonoBehaviour
             n1.transform.SetPositionAndRotation(new Vector2(frontCol - 7, 1), Quaternion.identity);
             componentGrid[0][frontCol] = n1;
         }
+		if (enemyHealth > 0) {
+			enemyHealth -= 0.01f;
+			healthBar.SetSize (enemyHealth);
+			print(enemyHealth);
+		}
         return true;
     }
 
