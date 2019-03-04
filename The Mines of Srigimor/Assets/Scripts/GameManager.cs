@@ -22,12 +22,29 @@ public class GameManager : MonoBehaviour
     GameObject firstSelected;
     GameObject secondSelected;
 
+    // Keep track of spell matches
+    int blueMatches;
+    int orangeMatches;
+    int yellowMatches;
+    int redMatches;
+    int purpleMatches;
+    int whiteMatches;
+    int greenMatches;
+
 
     // Start is called before the first frame update
     void Start()
     {
         // Instantiate jewel list
         jewels = new List<GameObject>() { blueJewel, orangeJewel, yellowJewel, redJewel, purpleJewel, whiteJewel, greenJewel };
+        // Instantiate matches
+        blueMatches = 0;
+        orangeMatches = 0;
+        yellowMatches = 0;
+        redMatches = 0;
+        purpleMatches = 0;
+        whiteMatches = 0;
+        greenMatches = 0;
         // Instantiate selected
         firstSelected = null;
         secondSelected = null;
@@ -144,12 +161,51 @@ public class GameManager : MonoBehaviour
         return int.Parse(pos[1]);
     }
 
+    // Update number of spell matches
+    public void updateMatches(string type)
+    {
+        switch (type)
+        {
+            case "blue":
+                blueMatches++;
+                //Debug.Log("Blue: " + blueMatches);
+                break;
+            case "yellow":
+                yellowMatches++;
+                //Debug.Log("Yellow: " + yellowMatches);
+                break;
+            case "purple":
+                purpleMatches++;
+                //Debug.Log("Purple: " + purpleMatches);
+                break;
+            case "white":
+                whiteMatches++;
+                //Debug.Log("White: " + whiteMatches);
+                break;
+            case "orange":
+                orangeMatches++;
+                //Debug.Log("Orange: " + orangeMatches);
+                break;
+            case "green":
+                greenMatches++;
+                //Debug.Log("Green: " + greenMatches);
+                break;
+            case "red":
+                redMatches++;
+                //Debug.Log("Red: " + redMatches);
+                break;
+        }
+    }
+
     // Invoke found matches
     public bool match(List<string[]> matches,int currR, int currC)
     {
         // Get current matched
         string[] match = findCurrMatch(matches,currR,currC);
         if (match==null) return false;
+
+        // Update amount of matches
+        updateMatches(componentGrid[getStringRow(match[0])][getStringCol(match[0])].tag);
 
         if (getStringCol(match[0]) == getStringCol(match[1]))
         { // If in same column, match vertically
@@ -266,7 +322,6 @@ public class GameManager : MonoBehaviour
 		if (enemyHealth > 0) {
 			enemyHealth -= 0.01f;
 			healthBar.SetSize (enemyHealth);
-			print(enemyHealth);
 		}
         return true;
     }
