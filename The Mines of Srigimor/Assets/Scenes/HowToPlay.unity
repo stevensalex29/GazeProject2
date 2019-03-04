@@ -404,8 +404,9 @@ MonoBehaviour:
     m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: "Use the component grid to create spells!\nSwap component tiles by clicking
-    adjacent tiles.\nCast a spell by matching 3 of the same tiles. \nEach spell will
-    have a different effect,\nuse them to escape from the mines!"
+    adjacent tiles.\nCast a spell by matching 3 of the same tiles.\nEvery spell will
+    do a little damage to the enemy. \nBuild the spell at the top to instantly defeat
+    an enemy,\nallowing you to move further out of the cave!"
 --- !u!222 &481148113
 CanvasRenderer:
   m_ObjectHideFlags: 0
