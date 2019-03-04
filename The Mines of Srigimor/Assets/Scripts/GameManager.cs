@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -14,8 +15,10 @@ public class GameManager : MonoBehaviour
     public GameObject whiteJewel;
     public GameObject greenJewel;
 	private float enemyHealth;
+    private int currentLevel;
 	[SerializeField] private healthBar healthBar;
     GameObject[][] componentGrid;
+    List<string> levels;
 
 
     List<GameObject> jewels;
@@ -35,6 +38,19 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // Instantiate levels
+        levels = new List<string> {"Level1"};
+        Scene currentScene = SceneManager.GetActiveScene(); //reset playerPrefs if at starting level
+        string sceneName = currentScene.name;
+        if (sceneName == "Level1")
+        {
+            PlayerPrefs.DeleteAll();
+        }
+
+        if (PlayerPrefs.HasKey("currentLevel"))
+            currentLevel = PlayerPrefs.GetInt("currentLevel"); //setup current level in playerprefs
+        else
+            PlayerPrefs.SetInt("currentLevel", 0);
         // Instantiate jewel list
         jewels = new List<GameObject>() { blueJewel, orangeJewel, yellowJewel, redJewel, purpleJewel, whiteJewel, greenJewel };
         // Instantiate matches
@@ -320,7 +336,7 @@ public class GameManager : MonoBehaviour
             componentGrid[0][frontCol] = n1;
         }
 		if (enemyHealth > 0) {
-			enemyHealth -= 0.01f;
+            enemyHealth -= 0.01f;
 			healthBar.SetSize (enemyHealth);
 		}
         return true;
@@ -409,6 +425,23 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (enemyHealth == 0.0f) nextLevel();
+    }
+
+    // Move to the next level
+    public void nextLevel()
+    {
+        currentLevel++;
+
+        if (currentLevel == levels.Count)
+        {
+            PlayerPrefs.SetInt("currentLevel", 0);
+            SceneManager.LoadScene("EndGame");
+        }
+        else
+        {
+            PlayerPrefs.SetInt("currentLevel", currentLevel);
+            SceneManager.LoadScene(levels[currentLevel]);
+        }
     }
 }
