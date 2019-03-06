@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
@@ -14,9 +15,13 @@ public class GameManager : MonoBehaviour
     public GameObject purpleJewel;
     public GameObject whiteJewel;
     public GameObject greenJewel;
+	public Text enemyAttackText;
+	private float heroHealth;
 	private float enemyHealth;
     private int currentLevel;
+	private int enemyAttack;
 	[SerializeField] private healthBar healthBar;
+	[SerializeField] private healthBar healthBarHero;
     GameObject[][] componentGrid;
     List<string> levels;
 
@@ -72,7 +77,10 @@ public class GameManager : MonoBehaviour
         componentGrid[3] = new GameObject[6];
         componentGrid[4] = new GameObject[6];
         componentGrid[5] = new GameObject[6];
+		heroHealth = 1.0f;
 		enemyHealth = 1.0f;
+		enemyAttack = 2;
+		enemyAttackText.text = "Enemy Attacks in " + enemyAttack.ToString() +" Moves";
 		//healthBar.SetSize (enemyHealth);
         // Create the starting grid for the level
         createGrid();
@@ -134,6 +142,16 @@ public class GameManager : MonoBehaviour
             Destroy(selects[0]);
             Destroy(selects[1]);
 
+			enemyAttackText.text = "Enemy Attacks in " + enemyAttack.ToString() +" Moves";
+			enemyAttack--;
+
+			if (enemyAttack == 0) {
+				enemyAttack = 2;
+				heroHealth -= 0.01f;
+
+				healthBarHero.SetSize(heroHealth);
+			}
+				
             // Check for matches and match
             match(checkMatch(), firstSelected.GetComponent<GridPosition>().getRow(), firstSelected.GetComponent<GridPosition>().getColumn());
 
