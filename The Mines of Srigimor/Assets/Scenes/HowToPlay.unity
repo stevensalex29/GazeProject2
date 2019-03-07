@@ -411,7 +411,7 @@ MonoBehaviour:
 
     Every spell will do a little damage to the enemy,
 
-    but the spell at the top will instantly kill them!
+    but the spell at the top will do critical damage!
 
     Once the enemy is dead, you''ll move further out of the cave.'
 --- !u!222 &481148113

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,13 +14,18 @@ public class GameManager : MonoBehaviour
     public GameObject yellowJewel;
     public GameObject redJewel;
     public GameObject purpleJewel;
-    public GameObject whiteJewel;
     public GameObject greenJewel;
-	public Text enemyAttackText;
+    public GameObject enemy;
 	private float heroHealth;
 	private float enemyHealth;
     private int currentLevel;
 	private int enemyAttack;
+    private string enemyWeakness;
+    private int[] enemyWeaknessSpell;
+    private int enemyMaxDamage;
+    private int enemyMinDamage;
+    private float regularPlayerDamage;
+    private string enemyName;
 	[SerializeField] private healthBar healthBar;
 	[SerializeField] private healthBar healthBarHero;
     GameObject[][] componentGrid;
@@ -36,7 +42,6 @@ public class GameManager : MonoBehaviour
     int yellowMatches;
     int redMatches;
     int purpleMatches;
-    int whiteMatches;
     int greenMatches;
 
 
@@ -52,19 +57,24 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.DeleteAll();
         }
 
+        // Set enemy data
+        string level = sceneName.Replace("Level", "");
+        int lev = 0;
+        Int32.TryParse(level,out lev);
+        if(lev!=0)setEnemy(lev);
+
         if (PlayerPrefs.HasKey("currentLevel"))
             currentLevel = PlayerPrefs.GetInt("currentLevel"); //setup current level in playerprefs
         else
             PlayerPrefs.SetInt("currentLevel", 0);
         // Instantiate jewel list
-        jewels = new List<GameObject>() { blueJewel, orangeJewel, yellowJewel, redJewel, purpleJewel, whiteJewel, greenJewel };
+        jewels = new List<GameObject>() { blueJewel, orangeJewel, yellowJewel, redJewel, purpleJewel, greenJewel };
         // Instantiate matches
         blueMatches = 0;
         orangeMatches = 0;
         yellowMatches = 0;
         redMatches = 0;
         purpleMatches = 0;
-        whiteMatches = 0;
         greenMatches = 0;
         // Instantiate selected
         firstSelected = null;
@@ -79,9 +89,7 @@ public class GameManager : MonoBehaviour
         componentGrid[5] = new GameObject[6];
 		heroHealth = 1.0f;
 		enemyHealth = 1.0f;
-		enemyAttack = 2;
-		enemyAttackText.text = "Enemy Attacks in " + enemyAttack.ToString() +" Moves";
-		//healthBar.SetSize (enemyHealth);
+		enemyAttack = 5;
         // Create the starting grid for the level
         createGrid();
     }
@@ -142,15 +150,16 @@ public class GameManager : MonoBehaviour
             Destroy(selects[0]);
             Destroy(selects[1]);
 
-			enemyAttackText.text = "Enemy Attacks in " + enemyAttack.ToString() +" Moves";
 			enemyAttack--;
+            GameObject.Find("EnemyAttackCountText").GetComponent<Text>().text = "Enemy will attack in " + enemyAttack + " moves";
 
-			if (enemyAttack == 0) {
-				enemyAttack = 2;
-				heroHealth -= 0.01f;
-
+            if (enemyAttack == 0) {
+				enemyAttack = 5;
+                int damage = UnityEngine.Random.Range(enemyMinDamage, enemyMaxDamage); // does damage based on enemy script
+				heroHealth -= (float)damage/100;
 				healthBarHero.SetSize(heroHealth);
-			}
+                GameObject.Find("EnemyAttackCountText").GetComponent<Text>().text = "Enemy attacked for " + damage + " damage";
+            }
 				
             // Check for matches and match
             match(checkMatch(), firstSelected.GetComponent<GridPosition>().getRow(), firstSelected.GetComponent<GridPosition>().getColumn());
@@ -202,31 +211,27 @@ public class GameManager : MonoBehaviour
         {
             case "blue":
                 blueMatches++;
-                //Debug.Log("Blue: " + blueMatches);
+                GameObject.Find("BlueMatches").GetComponent<Text>().text = "Blue Spells: " + blueMatches;
                 break;
             case "yellow":
                 yellowMatches++;
-                //Debug.Log("Yellow: " + yellowMatches);
+                GameObject.Find("YellowMatches").GetComponent<Text>().text = "Yellow Spells: " + yellowMatches;
                 break;
             case "purple":
                 purpleMatches++;
-                //Debug.Log("Purple: " + purpleMatches);
-                break;
-            case "white":
-                whiteMatches++;
-                //Debug.Log("White: " + whiteMatches);
+                GameObject.Find("PurpleMatches").GetComponent<Text>().text = "Purple Spells: " + purpleMatches;
                 break;
             case "orange":
                 orangeMatches++;
-                //Debug.Log("Orange: " + orangeMatches);
+                GameObject.Find("OrangeMatches").GetComponent<Text>().text = "Orange Spells: " + orangeMatches;
                 break;
             case "green":
                 greenMatches++;
-                //Debug.Log("Green: " + greenMatches);
+                GameObject.Find("GreenMatches").GetComponent<Text>().text = "Green Spells: " + greenMatches;
                 break;
             case "red":
                 redMatches++;
-                //Debug.Log("Red: " + redMatches);
+                GameObject.Find("RedMatches").GetComponent<Text>().text = "Red Spells: " + redMatches;
                 break;
         }
     }
@@ -241,10 +246,13 @@ public class GameManager : MonoBehaviour
         // Update amount of matches
         updateMatches(componentGrid[getStringRow(match[0])][getStringCol(match[0])].tag);
 
+        string type = "";
+
         if (getStringCol(match[0]) == getStringCol(match[1]))
         { // If in same column, match vertically
             int topRow = getStringRow(match[0]);
             int topCol = getStringCol(match[0]);
+            type = componentGrid[topRow][topCol].tag;
             Vector2 matchP1 = componentGrid[topRow][topCol].transform.position;
             Vector2 matchP2 = componentGrid[topRow + 1][topCol].transform.position;
             Vector2 matchP3 = componentGrid[topRow + 2][topCol].transform.position;
@@ -300,6 +308,7 @@ public class GameManager : MonoBehaviour
             int frontCol= getStringCol(match[0]);
             int topRow = getStringRow(match[0]);
             // Remove match from grid
+            type = componentGrid[topRow][frontCol].tag;
             GameObject match1 = componentGrid[topRow][frontCol];
             GameObject match2 = componentGrid[topRow][frontCol+1];
             GameObject match3 = componentGrid[topRow][frontCol+2];
@@ -353,8 +362,34 @@ public class GameManager : MonoBehaviour
             n1.transform.SetPositionAndRotation(new Vector2(frontCol - 7, 1), Quaternion.identity);
             componentGrid[0][frontCol] = n1;
         }
+
+        // Do player damage
 		if (enemyHealth > 0) {
-            enemyHealth -= 0.01f;
+            // Do more damage if cast spell of enemy weakness, otherwise do regular damage
+            float damage = 0.0f;
+            bool crit = false;
+            if (checkDamageWeakness(type) &&!checkCritical()) // If weakness spell cast and critical not met, do weakness damage
+            {
+                damage = regularPlayerDamage + 0.05f;
+                enemyHealth -= damage;
+            }else if(!checkDamageWeakness(type) &&!checkCritical()) // If weakness spell not cast and critical not met, do regular damage
+            {
+                damage = regularPlayerDamage;
+                enemyHealth -= damage;
+            }
+            else // Otherwise do critical damage
+            {
+                crit = true;
+                reduceInventory(); // Reduce inventory on screen and in code
+                damage = 0.40f; // Do critical damage
+                enemyHealth -= damage;
+                // (Zach)Do health bar size change
+
+            }
+            damage = damage * 100;
+            int d = (int)damage;
+            displayAttack(d, type,crit); // Display the attack on screen
+            if (enemyHealth < 0.0f) enemyHealth = 0.0f;
 			healthBar.SetSize (enemyHealth);
 		}
         return true;
@@ -410,10 +445,113 @@ public class GameManager : MonoBehaviour
         return matches;
     }
 
+    // Checks if the player damage was enemy weakness
+    public bool checkDamageWeakness(string matchType)
+    {
+        string type = "";
+        switch (matchType)
+        {
+            case "red":
+                type = "demonology";
+                break;
+            case "yellow":
+                type = "warlockery";
+                break;
+            case "purple":
+                type = "witchcraft";
+                break;
+            case "blue":
+                type = "wizardry";
+                break;
+            case "green":
+                type = "sorcery";
+                break;
+            case "orange":
+                type = "theurgy";
+                break;
+        }
+        return enemyWeakness == type;
+    }
+
+    // Gets the enemy data from enemy script
+    public void setEnemy(int level)
+    {
+        GameObject.Instantiate(enemy, new Vector2(0, 0), Quaternion.identity);
+        GameObject enem = GameObject.FindGameObjectWithTag("Enemy");
+        enem.AddComponent<Enemy1>();
+        switch (level)
+        {
+            case 1:
+                enemyMaxDamage = enem.GetComponent<Enemy1>().getMaxDamage();
+                enemyMinDamage = enem.GetComponent<Enemy1>().getMinDamage();
+                enemyWeakness = enem.GetComponent<Enemy1>().getWeakness();
+                enemyWeaknessSpell = enem.GetComponent<Enemy1>().getWeaknessSpell();
+                regularPlayerDamage = enem.GetComponent<Enemy1>().getPlayerDamage();
+                enemyName = enem.GetComponent<Enemy1>().getName();
+                break;
+        }
+        GameObject.Find("EnemyName").GetComponent<Text>().text = "Enemy: " + enemyName;
+        GameObject.Find("EnemyWeakness").GetComponent<Text>().text = "(Weak against " + enemyWeakness + " spells)";
+        string weaknessSpell = "";
+        for(int i = 0; i <enemyWeaknessSpell.Length; i++)
+        {
+            if (i == 0 && enemyWeaknessSpell[i] != 0) weaknessSpell += " Blue: " + enemyWeaknessSpell[i] + " ";
+            if (i == 1 && enemyWeaknessSpell[i] != 0) weaknessSpell += " Orange: " + enemyWeaknessSpell[i] + " ";
+            if (i == 2 && enemyWeaknessSpell[i] != 0) weaknessSpell += " Yellow: " + enemyWeaknessSpell[i] + " ";
+            if (i == 3 && enemyWeaknessSpell[i] != 0) weaknessSpell += " Red: " + enemyWeaknessSpell[i] + " ";
+            if (i == 4 && enemyWeaknessSpell[i] != 0) weaknessSpell += " Purple: " + enemyWeaknessSpell[i] + " ";
+            if (i == 5 && enemyWeaknessSpell[i] != 0) weaknessSpell += " Green: " + enemyWeaknessSpell[i] + " ";
+        }
+        GameObject.Find("CriticalSpell").GetComponent<Text>().text += " " + weaknessSpell;
+    }
+
+    // Displays the attack on screen
+    public void displayAttack(int damage, string type,bool crit)
+    {
+        string t = "";
+      
+        switch (type)
+        {
+            case "red":
+                t = "demonology";
+                break;
+            case "yellow":
+                t = "warlockery";
+                break;
+            case "purple":
+                t = "witchcraft";
+                break;
+            case "blue":
+                t = "wizardry";
+                break;
+            case "green":
+                t = "sorcery";
+                break;
+            case "orange":
+                t = "theurgy";
+                break;
+        }
+        if (crit)
+        {
+            GameObject.Find("PlayerAttack").GetComponent<Text>().text = "critical spell: + " + damage + " damage";
+        }
+        else
+        {
+            if (enemyWeakness == t)
+            {
+                GameObject.Find("PlayerAttack").GetComponent<Text>().text = "weakness spell: + " + damage + " damage";
+            }else
+            {
+                GameObject.Find("PlayerAttack").GetComponent<Text>().text = t + " spell: + " + damage + " damage";
+            }
+        }
+        
+    }
+
     // Gets a random jewel from the jewel list
     public GameObject getRandomJewel()
     {
-        return jewels[Random.Range(0, jewels.Count)];
+        return jewels[UnityEngine.Random.Range(0, jewels.Count)];
     }
 
     // Set First Selected
@@ -440,9 +578,50 @@ public class GameManager : MonoBehaviour
         return secondSelected;
     }
 
+    // Check critical spell activated
+    public bool checkCritical()
+    {
+        // Check that met spell criteria, true if so, false otherwise
+        if (blueMatches >= enemyWeaknessSpell[0])
+            if (orangeMatches >= enemyWeaknessSpell[1])
+                if (yellowMatches >= enemyWeaknessSpell[2])
+                    if (redMatches >= enemyWeaknessSpell[3])
+                        if (purpleMatches >= enemyWeaknessSpell[4])
+                            if (greenMatches >= enemyWeaknessSpell[5])
+                                return true;
+        return false;
+    }
+
+    // Reduce inventory after critical spell
+    public void reduceInventory()
+    {
+        // Reduce spells in inventory
+        blueMatches -= enemyWeaknessSpell[0];
+        orangeMatches -= enemyWeaknessSpell[1];
+        yellowMatches -= enemyWeaknessSpell[2];
+        redMatches -= enemyWeaknessSpell[3];
+        purpleMatches -= enemyWeaknessSpell[4];
+        greenMatches -= enemyWeaknessSpell[5];
+        // Display reduced spells
+        updateInventoryDisplay();
+
+    }
+
+    // Updates the display of the inventory for the user
+    public void updateInventoryDisplay()
+    {
+        GameObject.Find("BlueMatches").GetComponent<Text>().text = "Blue Spells: " + blueMatches;
+        GameObject.Find("YellowMatches").GetComponent<Text>().text = "Yellow Spells: " + yellowMatches;
+        GameObject.Find("PurpleMatches").GetComponent<Text>().text = "Purple Spells: " + purpleMatches;
+        GameObject.Find("OrangeMatches").GetComponent<Text>().text = "Orange Spells: " + orangeMatches;
+        GameObject.Find("GreenMatches").GetComponent<Text>().text = "Green Spells: " + greenMatches;
+        GameObject.Find("RedMatches").GetComponent<Text>().text = "Red Spells: " + redMatches;
+    }
+
     // Update is called once per frame
     void Update()
     {
+        // Check for next level when enemy dies
         if (enemyHealth == 0.0f) nextLevel();
     }
 

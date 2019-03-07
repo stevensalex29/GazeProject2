@@ -12,6 +12,7 @@ TagManager:
   - white
   - purple
   - select
+  - Enemy
   layers:
   - Default
   - TransparentFX
