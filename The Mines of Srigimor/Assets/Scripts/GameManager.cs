@@ -26,6 +26,14 @@ public class GameManager : MonoBehaviour
     private int enemyMinDamage;
     private float regularPlayerDamage;
     private string enemyName;
+    private bool swapping;
+    private bool matching;
+    private string[] currMatch;
+    private bool firstIteration = true;
+    private GameObject n1, n2, n3;
+    private Vector3 verticalMatch1, verticalMatch2, verticalMatch3;
+    private Vector3 initialFirstPos = Vector3.zero;
+    private Vector3 initialSecondPos = Vector3.zero;
 	[SerializeField] private healthBar healthBar;
 	[SerializeField] private healthBar healthBarHero;
     GameObject[][] componentGrid;
@@ -90,6 +98,8 @@ public class GameManager : MonoBehaviour
 		heroHealth = 1.0f;
 		enemyHealth = 1.0f;
 		enemyAttack = 5;
+        swapping = false;
+        matching = false;
         // Create the starting grid for the level
         createGrid();
     }
@@ -138,35 +148,9 @@ public class GameManager : MonoBehaviour
             firstSelected.GetComponent<GridPosition>().setRow(secondRow);
             firstSelected.GetComponent<GridPosition>().setColumn(secondCol);
 
-            // Swap screen positions
-            Vector2 fp = firstSelected.transform.position;
-            Vector2 temp = fp;
-            Vector2 sp = secondSelected.transform.position;
-            firstSelected.transform.SetPositionAndRotation(sp, Quaternion.identity);
-            secondSelected.transform.SetPositionAndRotation(temp, Quaternion.identity);
-
-            // Delete selects after swap
-            GameObject[] selects = GameObject.FindGameObjectsWithTag("select");
-            Destroy(selects[0]);
-            Destroy(selects[1]);
-
-			enemyAttack--;
-            GameObject.Find("EnemyAttackCountText").GetComponent<Text>().text = "Enemy will attack in " + enemyAttack + " moves";
-
-            if (enemyAttack == 0) {
-				enemyAttack = 5;
-                int damage = UnityEngine.Random.Range(enemyMinDamage, enemyMaxDamage); // does damage based on enemy script
-				heroHealth -= (float)damage/100;
-				healthBarHero.SetSize(heroHealth);
-                GameObject.Find("EnemyAttackCountText").GetComponent<Text>().text = "Enemy attacked for " + damage + " damage";
-            }
-				
-            // Check for matches and match
-            match(checkMatch(), firstSelected.GetComponent<GridPosition>().getRow(), firstSelected.GetComponent<GridPosition>().getColumn());
-
-            // Set selected as null
-            setFirstSelected(null);
-            setSecondSelected(null);
+            initialFirstPos = firstSelected.transform.position;
+            initialSecondPos = secondSelected.transform.position;
+            swapping = true;
         }
     }
 
@@ -245,153 +229,9 @@ public class GameManager : MonoBehaviour
 
         // Update amount of matches
         updateMatches(componentGrid[getStringRow(match[0])][getStringCol(match[0])].tag);
+        currMatch = match;
+        matching = true;
 
-        string type = "";
-
-        if (getStringCol(match[0]) == getStringCol(match[1]))
-        { // If in same column, match vertically
-            int topRow = getStringRow(match[0]);
-            int topCol = getStringCol(match[0]);
-            type = componentGrid[topRow][topCol].tag;
-            Vector2 matchP1 = componentGrid[topRow][topCol].transform.position;
-            Vector2 matchP2 = componentGrid[topRow + 1][topCol].transform.position;
-            Vector2 matchP3 = componentGrid[topRow + 2][topCol].transform.position;
-            // Remove match from grid
-            GameObject match1 = componentGrid[topRow][topCol];
-            GameObject match2 = componentGrid[topRow+1][topCol];
-            GameObject match3 = componentGrid[topRow+2][topCol];
-            componentGrid[topRow][topCol] = null;
-            componentGrid[topRow + 1][topCol] = null;
-            componentGrid[topRow + 2][topCol] = null;
-            // Destroy matched on screen
-            Destroy(match1);
-            Destroy(match2);
-            Destroy(match3);
-            // Move other objects down
-            int bottomRow = topRow - 1;
-            int p = 2;
-            for (int i = bottomRow; i > -1; i--)
-            {
-                componentGrid[i + 3][topCol] = componentGrid[i][topCol];
-                componentGrid[i][topCol] = null;
-                if (p == 0) componentGrid[i + 3][topCol].transform.SetPositionAndRotation(matchP1, Quaternion.identity);
-                if (p == 1) componentGrid[i + 3][topCol].transform.SetPositionAndRotation(matchP2, Quaternion.identity);
-                if (p == 2) componentGrid[i + 3][topCol].transform.SetPositionAndRotation(matchP3, Quaternion.identity);
-                componentGrid[i + 3][topCol].GetComponent<GridPosition>().setRowColumn(i + 3, topCol);
-                p--;
-            }
-            // Replace top three with randoms
-            GameObject n1 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
-            GameObject n2 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
-            GameObject n3 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
-            while (n1.tag == n2.tag && n1.tag == n3.tag) // Keep jewels random
-            {
-                Destroy(n1);
-                Destroy(n2);
-                Destroy(n3);
-                n1 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
-                n2 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
-                n3 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
-            }
-            n3.GetComponent<GridPosition>().setRowColumn(2, topCol);
-            n3.transform.SetPositionAndRotation(new Vector2(topCol - 7, -1), Quaternion.identity);
-            componentGrid[2][topCol] = n3;
-            n2.GetComponent<GridPosition>().setRowColumn(1, topCol);
-            n2.transform.SetPositionAndRotation(new Vector2(topCol - 7, 0), Quaternion.identity);
-            componentGrid[1][topCol] = n2;
-            n1.GetComponent<GridPosition>().setRowColumn(0, topCol);
-            n1.transform.SetPositionAndRotation(new Vector2(topCol - 7, 1), Quaternion.identity);
-            componentGrid[0][topCol] = n1;
-        }
-        else // Otherwise match horizontally
-        {
-            int frontCol= getStringCol(match[0]);
-            int topRow = getStringRow(match[0]);
-            // Remove match from grid
-            type = componentGrid[topRow][frontCol].tag;
-            GameObject match1 = componentGrid[topRow][frontCol];
-            GameObject match2 = componentGrid[topRow][frontCol+1];
-            GameObject match3 = componentGrid[topRow][frontCol+2];
-            componentGrid[topRow][frontCol] = null;
-            componentGrid[topRow][frontCol+1] = null;
-            componentGrid[topRow][frontCol+2] = null;
-            // Destroy matched on screen
-            Destroy(match1);
-            Destroy(match2);
-            Destroy(match3);
-            // Move other objects down
-            int bottomRow = topRow - 1;
-            for (int i = bottomRow; i > -1; i--)
-            {
-                componentGrid[i + 1][frontCol] = componentGrid[i][frontCol];
-                componentGrid[i + 1][frontCol+1] = componentGrid[i][frontCol+1];
-                componentGrid[i + 1][frontCol + 2] = componentGrid[i][frontCol + 2];
-                componentGrid[i][frontCol] = null;
-                componentGrid[i][frontCol+1] = null;
-                componentGrid[i][frontCol+2] = null;
-
-
-                componentGrid[i + 1][frontCol].transform.SetPositionAndRotation(new Vector2(frontCol - 7,-i), Quaternion.identity);
-                componentGrid[i + 1][frontCol + 1].transform.SetPositionAndRotation(new Vector2(frontCol - 6, -i), Quaternion.identity);
-                componentGrid[i + 1][frontCol + 2].transform.SetPositionAndRotation(new Vector2(frontCol - 5, -i), Quaternion.identity);
-
-                componentGrid[i + 1][frontCol].GetComponent<GridPosition>().setRowColumn(i + 1, frontCol);
-                componentGrid[i + 1][frontCol + 1].GetComponent<GridPosition>().setRowColumn(i + 1, frontCol + 1);
-                componentGrid[i + 1][frontCol + 2].GetComponent<GridPosition>().setRowColumn(i + 1, frontCol + 2);
-            }
-            // Replace top three with randoms
-            GameObject n1 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
-            GameObject n2 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
-            GameObject n3 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
-            while (n1.tag == n2.tag && n1.tag == n3.tag) // Keep jewels random
-            {
-                Destroy(n1);
-                Destroy(n2);
-                Destroy(n3);
-                n1 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
-                n2 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
-                n3 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
-            }
-            n3.GetComponent<GridPosition>().setRowColumn(0, frontCol + 2);
-            n3.transform.SetPositionAndRotation(new Vector2(frontCol - 5, 1), Quaternion.identity);
-            componentGrid[0][frontCol + 2] = n3;
-            n2.GetComponent<GridPosition>().setRowColumn(0, frontCol + 1);
-            n2.transform.SetPositionAndRotation(new Vector2(frontCol - 6, 1), Quaternion.identity);
-            componentGrid[0][frontCol + 1] = n2;
-            n1.GetComponent<GridPosition>().setRowColumn(0, frontCol);
-            n1.transform.SetPositionAndRotation(new Vector2(frontCol - 7, 1), Quaternion.identity);
-            componentGrid[0][frontCol] = n1;
-        }
-
-        // Do player damage
-		if (enemyHealth > 0) {
-            // Do more damage if cast spell of enemy weakness, otherwise do regular damage
-            float damage = 0.0f;
-            bool crit = false;
-            if (checkDamageWeakness(type) &&!checkCritical()) // If weakness spell cast and critical not met, do weakness damage
-            {
-                damage = regularPlayerDamage + 0.05f;
-                enemyHealth -= damage;
-            }else if(!checkDamageWeakness(type) &&!checkCritical()) // If weakness spell not cast and critical not met, do regular damage
-            {
-                damage = regularPlayerDamage;
-                enemyHealth -= damage;
-            }
-            else // Otherwise do critical damage
-            {
-                crit = true;
-                reduceInventory(); // Reduce inventory on screen and in code
-                damage = 0.40f; // Do critical damage
-                enemyHealth -= damage;
-                // (Zach)Do health bar size change
-
-            }
-            damage = damage * 100;
-            int d = (int)damage;
-            displayAttack(d, type,crit); // Display the attack on screen
-            if (enemyHealth < 0.0f) enemyHealth = 0.0f;
-			healthBar.SetSize (enemyHealth);
-		}
         return true;
     }
 
@@ -618,11 +458,291 @@ public class GameManager : MonoBehaviour
         GameObject.Find("RedMatches").GetComponent<Text>().text = "Red Spells: " + redMatches;
     }
 
+    // Get swap value
+    public bool getSwap()
+    {
+        return swapping;
+    }
+
+    // Get match value
+    public bool getMatch()
+    {
+        return matching;
+    }
+
     // Update is called once per frame
     void Update()
     {
+        // Implement animation based swap
+        if (swapping)
+        {
+            // Move Components slowly
+            firstSelected.transform.position = Vector3.MoveTowards(firstSelected.transform.position, initialSecondPos, 4 * Time.deltaTime);
+            secondSelected.transform.position = Vector3.MoveTowards(secondSelected.transform.position, initialFirstPos, 4 * Time.deltaTime);
+
+            // If swapped, finish swap
+            if (firstSelected.transform.position == initialSecondPos && secondSelected.transform.position == initialFirstPos)
+            {
+                // Delete selects after swap
+                GameObject[] selects = GameObject.FindGameObjectsWithTag("select");
+                Destroy(selects[0]);
+                Destroy(selects[1]);
+
+                enemyAttack--;
+                GameObject.Find("EnemyAttackCountText").GetComponent<Text>().text = "Enemy will attack in " + enemyAttack + " moves";
+
+                if (enemyAttack == 0)
+                {
+                    enemyAttack = 5;
+                    int damage = UnityEngine.Random.Range(enemyMinDamage, enemyMaxDamage); // does damage based on enemy script
+                    heroHealth -= (float)damage / 100;
+                    healthBarHero.SetSize(heroHealth);
+                    GameObject.Find("EnemyAttackCountText").GetComponent<Text>().text = "Enemy attacked for " + damage + " damage";
+                }
+
+                // Check for matches and match
+                match(checkMatch(), firstSelected.GetComponent<GridPosition>().getRow(), firstSelected.GetComponent<GridPosition>().getColumn());
+
+                // Set selected as null
+                setFirstSelected(null);
+                setSecondSelected(null);
+                swapping = false;
+            }
+            
+        }
+
+        // Implement animation based matching
+        if (matching)
+        {
+            string type = "";
+
+            // If in same column, match vertically
+            if (getStringCol(currMatch[0]) == getStringCol(currMatch[1]))
+            { 
+                int topRow = getStringRow(currMatch[0]);
+                int topCol = getStringCol(currMatch[0]);
+                type = componentGrid[topRow][topCol].tag;
+
+                // Only change grid positions once, iterate the rest until all objects moved on screen
+                if (firstIteration)
+                {
+                    verticalMatch1 = componentGrid[topRow][topCol].transform.position;
+                    verticalMatch2= componentGrid[topRow + 1][topCol].transform.position;
+                    verticalMatch3 = componentGrid[topRow + 2][topCol].transform.position;
+                    // Remove match from grid
+                    GameObject match1 = componentGrid[topRow][topCol];
+                    GameObject match2 = componentGrid[topRow + 1][topCol];
+                    GameObject match3 = componentGrid[topRow + 2][topCol];
+                    componentGrid[topRow][topCol] = null;
+                    componentGrid[topRow + 1][topCol] = null;
+                    componentGrid[topRow + 2][topCol] = null;
+                    // Destroy matched on screen
+                    Destroy(match1);
+                    Destroy(match2);
+                    Destroy(match3);
+                    // Move other objects down
+                    int bottomRow = topRow - 1;
+                    int p = 2;
+
+                    for (int i = bottomRow; i > -1; i--)
+                    {
+                        componentGrid[i + 3][topCol] = componentGrid[i][topCol];
+                        componentGrid[i][topCol] = null;
+                        componentGrid[i + 3][topCol].GetComponent<GridPosition>().setRowColumn(i + 3, topCol);
+                        p--;
+                    }
+                    // Replace top three with randoms
+                    n1 = Instantiate(getRandomJewel(), new Vector2(topCol-7, 1), Quaternion.identity);
+                    n2 = Instantiate(getRandomJewel(), new Vector2(topCol-7, 1), Quaternion.identity);
+                    n3 = Instantiate(getRandomJewel(), new Vector2(topCol-7, 1), Quaternion.identity);
+                    // Keep components random
+                    while (n1.tag == n2.tag && n1.tag == n3.tag) 
+                    {
+                        Destroy(n1);
+                        Destroy(n2);
+                        Destroy(n3);
+                        n1 = Instantiate(getRandomJewel(), new Vector2(topCol - 7, 1), Quaternion.identity);
+                        n2 = Instantiate(getRandomJewel(), new Vector2(topCol - 7, 1), Quaternion.identity);
+                        n3 = Instantiate(getRandomJewel(), new Vector2(topCol - 7, 1), Quaternion.identity);
+                    }
+                    // Set grid position of new components
+                    n3.GetComponent<GridPosition>().setRowColumn(2, topCol);
+                    componentGrid[2][topCol] = n3;
+                    n2.GetComponent<GridPosition>().setRowColumn(1, topCol); 
+                    componentGrid[1][topCol] = n2;
+                    n1.GetComponent<GridPosition>().setRowColumn(0, topCol);
+                    componentGrid[0][topCol] = n1;
+                    firstIteration = false;
+                }
+
+                // Move matches on screen
+                int bottomR = topRow - 1;
+                int pos = 2;
+                int rowP3 = bottomR + 3;
+                int rowP2 = bottomR + 2;
+                int rowP1 = bottomR + 1;
+                
+
+                // Move non-matched components down
+                for (int i = bottomR; i > -1; i--)
+                {
+
+                    if (pos == 0) componentGrid[i + 3][topCol].transform.position = Vector3.MoveTowards(componentGrid[i + 3][topCol].transform.position, verticalMatch1, 4 * Time.deltaTime);
+                    if (pos == 1) componentGrid[i + 3][topCol].transform.position = Vector3.MoveTowards(componentGrid[i + 3][topCol].transform.position, verticalMatch2, 4 * Time.deltaTime);
+                    if (pos == 2) componentGrid[i + 3][topCol].transform.position = Vector3.MoveTowards(componentGrid[i + 3][topCol].transform.position, verticalMatch3, 4 * Time.deltaTime);
+                    pos--;
+                }
+
+                // Move new components down on screen
+                Vector3 position3 = new Vector2(topCol - 7, -1);
+                Vector3 position2 = new Vector2(topCol - 7, 0);
+                Vector3 firstMoved1 = componentGrid[rowP3][topCol].transform.position;
+                Vector3 firstMoved2 = componentGrid[rowP2][topCol].transform.position;
+                Vector3 firstMoved3 = componentGrid[rowP1][topCol].transform.position;
+
+                n3.transform.position = Vector3.MoveTowards(n3.transform.position, position3, 4 * Time.deltaTime);
+                n2.transform.position = Vector3.MoveTowards(n2.transform.position, position2, 4 * Time.deltaTime);
+
+                // If non matched components have been moved down as well as the new components, done matching
+                if(firstMoved3 == verticalMatch1 && firstMoved2 == verticalMatch2 && firstMoved1 == verticalMatch3)
+                {
+                    if (n3.transform.position == position3 && n2.transform.position == position2)
+                    {
+                        matching = false;
+                        enemyDamage(type);
+                        firstIteration = true;
+                    }
+                }
+                
+            }
+            // Otherwise match horizontally
+            else
+            {
+                int frontCol = getStringCol(currMatch[0]);
+                int topRow = getStringRow(currMatch[0]);
+                type = componentGrid[topRow][frontCol].tag;
+
+                // Change grid positions once, iterate to move the components on the screen
+                if (firstIteration)
+                {
+                    // Remove match from grid
+                    GameObject match1 = componentGrid[topRow][frontCol];
+                    GameObject match2 = componentGrid[topRow][frontCol + 1];
+                    GameObject match3 = componentGrid[topRow][frontCol + 2];
+                    componentGrid[topRow][frontCol] = null;
+                    componentGrid[topRow][frontCol + 1] = null;
+                    componentGrid[topRow][frontCol + 2] = null;
+                    // Destroy matched on screen
+                    Destroy(match1);
+                    Destroy(match2);
+                    Destroy(match3);
+                    // Move other objects down
+                    int bottomRow = topRow - 1;
+
+                    for (int i = bottomRow; i > -1; i--)
+                    {
+                        componentGrid[i + 1][frontCol] = componentGrid[i][frontCol];
+                        componentGrid[i + 1][frontCol + 1] = componentGrid[i][frontCol + 1];
+                        componentGrid[i + 1][frontCol + 2] = componentGrid[i][frontCol + 2];
+                        componentGrid[i][frontCol] = null;
+                        componentGrid[i][frontCol + 1] = null;
+                        componentGrid[i][frontCol + 2] = null;
+
+                        componentGrid[i + 1][frontCol].GetComponent<GridPosition>().setRowColumn(i + 1, frontCol);
+                        componentGrid[i + 1][frontCol + 1].GetComponent<GridPosition>().setRowColumn(i + 1, frontCol + 1);
+                        componentGrid[i + 1][frontCol + 2].GetComponent<GridPosition>().setRowColumn(i + 1, frontCol + 2);
+                    }
+                    // Replace top three with randoms
+                    n1 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
+                    n2 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
+                    n3 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
+                    // Keep components random
+                    while (n1.tag == n2.tag && n1.tag == n3.tag) 
+                    {
+                        Destroy(n1);
+                        Destroy(n2);
+                        Destroy(n3);
+                        n1 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
+                        n2 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
+                        n3 = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
+                    }
+                    // Position new components in grid and on screen
+                    n3.GetComponent<GridPosition>().setRowColumn(0, frontCol + 2);
+                    n3.transform.SetPositionAndRotation(new Vector2(frontCol - 5, 1), Quaternion.identity);
+                    componentGrid[0][frontCol + 2] = n3;
+                    n2.GetComponent<GridPosition>().setRowColumn(0, frontCol + 1);
+                    n2.transform.SetPositionAndRotation(new Vector2(frontCol - 6, 1), Quaternion.identity);
+                    componentGrid[0][frontCol + 1] = n2;
+                    n1.GetComponent<GridPosition>().setRowColumn(0, frontCol);
+                    n1.transform.SetPositionAndRotation(new Vector2(frontCol - 7, 1), Quaternion.identity);
+                    componentGrid[0][frontCol] = n1;
+                    firstIteration = false;
+                }
+
+                // Move old components on screen
+                int bottomR = topRow - 1;
+                bool done = true;
+
+                // Move non-matched components on screen
+                for (int i = bottomR; i > -1; i--)
+                {
+                    componentGrid[i + 1][frontCol].transform.position = Vector3.MoveTowards(componentGrid[i + 1][frontCol].transform.position, new Vector2(frontCol - 7, -i), 4 * Time.deltaTime);
+                    if (componentGrid[i + 1][frontCol].transform.position != new Vector3(frontCol - 7, -i)) done = false;
+                    componentGrid[i + 1][frontCol + 1].transform.position = Vector3.MoveTowards(componentGrid[i + 1][frontCol + 1].transform.position, new Vector2(frontCol - 6, -i), 4 * Time.deltaTime);
+                    if (componentGrid[i + 1][frontCol+1].transform.position != new Vector3(frontCol - 6, -i)) done = false;
+                    componentGrid[i + 1][frontCol + 2].transform.position = Vector3.MoveTowards(componentGrid[i + 1][frontCol + 2].transform.position, new Vector2(frontCol - 5, -i), 4 * Time.deltaTime);
+                    if (componentGrid[i + 1][frontCol+2].transform.position != new Vector3(frontCol - 5, -i)) done = false;
+                }
+
+                // If all components have been moved, done matching
+                if (done)
+                {
+                    matching = false;
+                    enemyDamage(type);
+                    firstIteration = true;
+                } 
+            }
+        }
+
         // Check for next level when enemy dies
         if (enemyHealth == 0.0f) nextLevel();
+    }
+
+
+    // Do damage on enemy
+    public void enemyDamage(string type)
+    {
+        // If enemy health is greater than zero, add damage
+        if (enemyHealth > 0)
+        {
+            // Do more damage if cast spell of enemy weakness, otherwise do regular damage
+            float damage = 0.0f;
+            bool crit = false;
+            if (checkDamageWeakness(type) && !checkCritical()) // If weakness spell cast and critical not met, do weakness damage
+            {
+                damage = regularPlayerDamage + 0.05f;
+                enemyHealth -= damage;
+            }
+            else if (!checkDamageWeakness(type) && !checkCritical()) // If weakness spell not cast and critical not met, do regular damage
+            {
+                damage = regularPlayerDamage;
+                enemyHealth -= damage;
+            }
+            else // Otherwise do critical damage
+            {
+                crit = true;
+                reduceInventory(); // Reduce inventory on screen and in code
+                damage = 0.40f; // Do critical damage
+                enemyHealth -= damage;
+                // (Zach)Do health bar size change
+
+            }
+            damage = damage * 100;
+            int d = (int)damage;
+            displayAttack(d, type, crit); // Display the attack on screen
+            if (enemyHealth < 0.0f) enemyHealth = 0.0f;
+            healthBar.SetSize(enemyHealth);
+        }
     }
 
     // Move to the next level

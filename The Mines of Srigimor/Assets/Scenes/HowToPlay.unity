@@ -403,17 +403,11 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: 'Use the component grid to create spells!
-
-    Swap component tiles by clicking adjacent tiles.
-
-    Cast a spell by matching 3 of the same tiles.
-
-    Every spell will do a little damage to the enemy,
-
-    but the spell at the top will do critical damage!
-
-    Once the enemy is dead, you''ll move further out of the cave.'
+  m_Text: "Use the component grid to gather spells!\nSwap component tiles by clicking
+    adjacent tiles.\nMatch 3 of the same components to gather a spell!\nEach spell
+    gathered does initial damage to the enemy. \nGather the enemys weakness spell
+    to do critical damage!\nOnce the enemy is dead, you'll move further out of the
+    cave."
 --- !u!222 &481148113
 CanvasRenderer:
   m_ObjectHideFlags: 0
