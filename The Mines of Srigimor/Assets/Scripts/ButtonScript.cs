@@ -35,6 +35,18 @@ public class ButtonScript : MonoBehaviour
         SceneManager.LoadScene("MainMenu");
     }
 
+    // Next
+    public void Next()
+    {
+        GameObject.Find("InstructionManager").GetComponent<InstructionManager>().Next();
+    }
+
+    // Previous
+    public void Previous()
+    {
+        GameObject.Find("InstructionManager").GetComponent<InstructionManager>().Previous();
+    }
+
     // Quit
     public void Quit()
     {
