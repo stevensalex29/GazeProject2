@@ -13,6 +13,7 @@ TagManager:
   - purple
   - select
   - Enemy
+  - music
   layers:
   - Default
   - TransparentFX

@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     public GameObject purpleJewel;
     public GameObject greenJewel;
     public GameObject enemy;
+    private AudioSource source;
 	private float heroHealth;
 	private float enemyHealth;
     private int currentLevel;
@@ -53,6 +54,11 @@ public class GameManager : MonoBehaviour
     int purpleMatches;
     int greenMatches;
 
+    // Awake 
+    private void Awake()
+    {
+        source = GetComponent<AudioSource>();
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -437,12 +443,12 @@ public class GameManager : MonoBehaviour
     public void reduceInventory()
     {
         // Reduce spells in inventory
-        blueMatches -= enemyWeaknessSpell[0];
-        orangeMatches -= enemyWeaknessSpell[1];
-        yellowMatches -= enemyWeaknessSpell[2];
-        redMatches -= enemyWeaknessSpell[3];
-        purpleMatches -= enemyWeaknessSpell[4];
-        greenMatches -= enemyWeaknessSpell[5];
+        blueMatches = 0;
+        orangeMatches = 0;
+        yellowMatches = 0;
+        redMatches  = 0;
+        purpleMatches = 0;
+        greenMatches = 0;
         // Display reduced spells
         updateInventoryDisplay();
 
