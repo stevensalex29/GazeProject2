@@ -29,6 +29,7 @@ public class GameManager : MonoBehaviour
     private bool swapping;
     private bool matching;
     private string[] currMatch;
+    private string type = "";
     private bool firstIteration = true;
     private GameObject n1, n2, n3;
     private Vector3 verticalMatch1, verticalMatch2, verticalMatch3;
@@ -195,27 +196,27 @@ public class GameManager : MonoBehaviour
         {
             case "blue":
                 blueMatches++;
-                GameObject.Find("BlueMatches").GetComponent<Text>().text = "Blue Spells: " + blueMatches;
+                GameObject.Find("BlueMatches").GetComponent<Text>().text = "" + blueMatches;
                 break;
             case "yellow":
                 yellowMatches++;
-                GameObject.Find("YellowMatches").GetComponent<Text>().text = "Yellow Spells: " + yellowMatches;
+                GameObject.Find("YellowMatches").GetComponent<Text>().text = "" + yellowMatches;
                 break;
             case "purple":
                 purpleMatches++;
-                GameObject.Find("PurpleMatches").GetComponent<Text>().text = "Purple Spells: " + purpleMatches;
+                GameObject.Find("PurpleMatches").GetComponent<Text>().text = "" + purpleMatches;
                 break;
             case "orange":
                 orangeMatches++;
-                GameObject.Find("OrangeMatches").GetComponent<Text>().text = "Orange Spells: " + orangeMatches;
+                GameObject.Find("OrangeMatches").GetComponent<Text>().text = "" + orangeMatches;
                 break;
             case "green":
                 greenMatches++;
-                GameObject.Find("GreenMatches").GetComponent<Text>().text = "Green Spells: " + greenMatches;
+                GameObject.Find("GreenMatches").GetComponent<Text>().text = "" + greenMatches;
                 break;
             case "red":
                 redMatches++;
-                GameObject.Find("RedMatches").GetComponent<Text>().text = "Red Spells: " + redMatches;
+                GameObject.Find("RedMatches").GetComponent<Text>().text = "" + redMatches;
                 break;
         }
     }
@@ -335,12 +336,12 @@ public class GameManager : MonoBehaviour
         string weaknessSpell = "";
         for(int i = 0; i <enemyWeaknessSpell.Length; i++)
         {
-            if (i == 0 && enemyWeaknessSpell[i] != 0) weaknessSpell += " Blue: " + enemyWeaknessSpell[i] + " ";
-            if (i == 1 && enemyWeaknessSpell[i] != 0) weaknessSpell += " Orange: " + enemyWeaknessSpell[i] + " ";
-            if (i == 2 && enemyWeaknessSpell[i] != 0) weaknessSpell += " Yellow: " + enemyWeaknessSpell[i] + " ";
-            if (i == 3 && enemyWeaknessSpell[i] != 0) weaknessSpell += " Red: " + enemyWeaknessSpell[i] + " ";
-            if (i == 4 && enemyWeaknessSpell[i] != 0) weaknessSpell += " Purple: " + enemyWeaknessSpell[i] + " ";
-            if (i == 5 && enemyWeaknessSpell[i] != 0) weaknessSpell += " Green: " + enemyWeaknessSpell[i] + " ";
+            if (i == 0 && enemyWeaknessSpell[i] != 0) weaknessSpell += " Wizardy: " + enemyWeaknessSpell[i] + " ";
+            if (i == 1 && enemyWeaknessSpell[i] != 0) weaknessSpell += " Theurgy.: " + enemyWeaknessSpell[i] + " ";
+            if (i == 2 && enemyWeaknessSpell[i] != 0) weaknessSpell += " Warlockry: " + enemyWeaknessSpell[i] + " ";
+            if (i == 3 && enemyWeaknessSpell[i] != 0) weaknessSpell += " Demonology: " + enemyWeaknessSpell[i] + " ";
+            if (i == 4 && enemyWeaknessSpell[i] != 0) weaknessSpell += " Witchcraft: " + enemyWeaknessSpell[i] + " ";
+            if (i == 5 && enemyWeaknessSpell[i] != 0) weaknessSpell += " Sorcery: " + enemyWeaknessSpell[i] + " ";
         }
         GameObject.Find("CriticalSpell").GetComponent<Text>().text += " " + weaknessSpell;
     }
@@ -353,33 +354,33 @@ public class GameManager : MonoBehaviour
         switch (type)
         {
             case "red":
-                t = "demonology";
+                t = "Demonology";
                 break;
             case "yellow":
-                t = "warlockery";
+                t = "Warlockery";
                 break;
             case "purple":
-                t = "witchcraft";
+                t = "Witchcraft";
                 break;
             case "blue":
-                t = "wizardry";
+                t = "Wizardry";
                 break;
             case "green":
-                t = "sorcery";
+                t = "Sorcery";
                 break;
             case "orange":
-                t = "theurgy";
+                t = "Theurgy";
                 break;
         }
         if (crit)
         {
-            GameObject.Find("PlayerAttack").GetComponent<Text>().text = "critical spell: + " + damage + " damage";
+            GameObject.Find("PlayerAttack").GetComponent<Text>().text = "Critical spell: + " + damage + " damage";
         }
         else
         {
-            if (enemyWeakness == t)
+            if (enemyWeakness == t.ToLower())
             {
-                GameObject.Find("PlayerAttack").GetComponent<Text>().text = "weakness spell: + " + damage + " damage";
+                GameObject.Find("PlayerAttack").GetComponent<Text>().text = "Weakness spell: + " + damage + " damage";
             }else
             {
                 GameObject.Find("PlayerAttack").GetComponent<Text>().text = t + " spell: + " + damage + " damage";
@@ -450,12 +451,12 @@ public class GameManager : MonoBehaviour
     // Updates the display of the inventory for the user
     public void updateInventoryDisplay()
     {
-        GameObject.Find("BlueMatches").GetComponent<Text>().text = "Blue Spells: " + blueMatches;
-        GameObject.Find("YellowMatches").GetComponent<Text>().text = "Yellow Spells: " + yellowMatches;
-        GameObject.Find("PurpleMatches").GetComponent<Text>().text = "Purple Spells: " + purpleMatches;
-        GameObject.Find("OrangeMatches").GetComponent<Text>().text = "Orange Spells: " + orangeMatches;
-        GameObject.Find("GreenMatches").GetComponent<Text>().text = "Green Spells: " + greenMatches;
-        GameObject.Find("RedMatches").GetComponent<Text>().text = "Red Spells: " + redMatches;
+        GameObject.Find("BlueMatches").GetComponent<Text>().text = " " + blueMatches;
+        GameObject.Find("YellowMatches").GetComponent<Text>().text = " " + yellowMatches;
+        GameObject.Find("PurpleMatches").GetComponent<Text>().text = " " + purpleMatches;
+        GameObject.Find("OrangeMatches").GetComponent<Text>().text = " " + orangeMatches;
+        GameObject.Find("GreenMatches").GetComponent<Text>().text = " " + greenMatches;
+        GameObject.Find("RedMatches").GetComponent<Text>().text = " " + redMatches;
     }
 
     // Get swap value
@@ -514,18 +515,17 @@ public class GameManager : MonoBehaviour
         // Implement animation based matching
         if (matching)
         {
-            string type = "";
-
             // If in same column, match vertically
             if (getStringCol(currMatch[0]) == getStringCol(currMatch[1]))
             { 
                 int topRow = getStringRow(currMatch[0]);
                 int topCol = getStringCol(currMatch[0]);
-                type = componentGrid[topRow][topCol].tag;
+                
 
                 // Only change grid positions once, iterate the rest until all objects moved on screen
                 if (firstIteration)
                 {
+                    type = componentGrid[topRow][topCol].tag;
                     verticalMatch1 = componentGrid[topRow][topCol].transform.position;
                     verticalMatch2= componentGrid[topRow + 1][topCol].transform.position;
                     verticalMatch3 = componentGrid[topRow + 2][topCol].transform.position;
@@ -620,11 +620,11 @@ public class GameManager : MonoBehaviour
             {
                 int frontCol = getStringCol(currMatch[0]);
                 int topRow = getStringRow(currMatch[0]);
-                type = componentGrid[topRow][frontCol].tag;
-
+                
                 // Change grid positions once, iterate to move the components on the screen
                 if (firstIteration)
                 {
+                    type = componentGrid[topRow][frontCol].tag;
                     // Remove match from grid
                     GameObject match1 = componentGrid[topRow][frontCol];
                     GameObject match2 = componentGrid[topRow][frontCol + 1];
@@ -720,7 +720,7 @@ public class GameManager : MonoBehaviour
             bool crit = false;
             if (checkDamageWeakness(type) && !checkCritical()) // If weakness spell cast and critical not met, do weakness damage
             {
-                damage = regularPlayerDamage + 0.05f;
+                damage = regularPlayerDamage + 0.10f;
                 enemyHealth -= damage;
             }
             else if (!checkDamageWeakness(type) && !checkCritical()) // If weakness spell not cast and critical not met, do regular damage
