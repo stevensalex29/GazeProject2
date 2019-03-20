@@ -19,7 +19,7 @@ public class Interaction : MonoBehaviour
     void OnMouseDown()
     {
         // As long as swapping is not taking place, allow user to select components
-        if (!gm.getSwap() && !gm.getMatch()) {
+        if (!gm.getSwap() && !gm.getMatch() && !gm.getPaused()) {
             GameObject first = gm.getFirstSelected();
             GameObject second = gm.getSecondSelected();
 

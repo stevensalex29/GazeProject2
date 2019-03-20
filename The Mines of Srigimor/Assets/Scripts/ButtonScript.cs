@@ -5,6 +5,15 @@ using UnityEngine.SceneManagement;
 
 public class ButtonScript : MonoBehaviour
 {
+    public GameObject tipPanel;
+
+    // Awake
+    private void Awake()
+    {
+        GameObject t = GameObject.Find("TipPanel");
+        if (t != null) tipPanel = t;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -47,13 +56,27 @@ public class ButtonScript : MonoBehaviour
         GameObject.Find("InstructionManager").GetComponent<InstructionManager>().Previous();
     }
 
-    //Retry the last level
+    // Retry the last level
     public void Retry()
     {
         int level = PlayerPrefs.GetInt("currentLevel") + 1;
         string scene = "Level" + level;
         SceneManager.LoadScene(scene);
 
+    }
+
+    // Open Tips menu
+    public void OpenTips()
+    {
+        tipPanel.SetActive(true);
+        GameObject.Find("GameManager").GetComponent<GameManager>().setPaused(true);
+    }
+
+    // Close Tips menu
+    public void CloseTips()
+    {
+        GameObject.Find("TipsPanel").SetActive(false);
+        GameObject.Find("GameManager").GetComponent<GameManager>().setPaused(false);
     }
 
     // Quit
