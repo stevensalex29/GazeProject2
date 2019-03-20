@@ -140,6 +140,24 @@ public class GameManager : MonoBehaviour
                 componentGrid[i][k] = g;
             }
         }
+
+        // Get rid of initial matches
+        while (checkMatch().Count != 0)
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                for (int k = 0; k < 6; k++)
+                {
+                    GameObject g = Instantiate(getRandomJewel(), new Vector2(0, 0), Quaternion.identity);
+                    g.GetComponent<GridPosition>().setColumn(k);
+                    g.GetComponent<GridPosition>().setRow(i);
+                    int row = i * -1;
+                    g.transform.SetPositionAndRotation(new Vector2(k - 7, row + 1), Quaternion.identity);
+                    Destroy(componentGrid[i][k]);
+                    componentGrid[i][k] = g;
+                }
+            }
+        }
     }
     
     // Get the component grid
@@ -759,6 +777,19 @@ public class GameManager : MonoBehaviour
                     enemyDamage(type);
                     firstIteration = true;
                 } 
+            }
+            // If finished matching and there are still more matches, match again
+            if (matching == false)
+            {
+                List<String[]> matches = checkMatch();
+                if (matches.Count != 0)
+                {
+                    string[] match = matches[0];
+                    updateMatches(componentGrid[getStringRow(match[0])][getStringCol(match[0])].tag);
+                    currMatch = match;
+                    matching = true;
+                    source.PlayOneShot(s_MagicTwinkle);
+                }    
             }
         }
 
