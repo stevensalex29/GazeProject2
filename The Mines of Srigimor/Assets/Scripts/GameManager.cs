@@ -38,6 +38,9 @@ public class GameManager : MonoBehaviour
     private Vector3 initialSecondPos = Vector3.zero;
 	[SerializeField] private healthBar healthBar;
 	[SerializeField] private healthBar healthBarHero;
+    [SerializeField] private healthBar spellComponent1;
+    [SerializeField] private healthBar spellComponent2;
+    [SerializeField] private healthBar spellComponent3;
     GameObject[][] componentGrid;
     List<string> levels;
 
@@ -105,6 +108,9 @@ public class GameManager : MonoBehaviour
 		heroHealth = 1.0f;
 		enemyHealth = 1.0f;
 		enemyAttack = 5;
+        spellComponent1.SetSize(0f);
+        spellComponent2.SetSize(0f);
+        spellComponent3.SetSize(0f);
         swapping = false;
         matching = false;
         // Create the starting grid for the level
@@ -451,7 +457,20 @@ public class GameManager : MonoBehaviour
         greenMatches = 0;
         // Display reduced spells
         updateInventoryDisplay();
+    }
+    
+    //reduce the spell bar after a critical spell
+    public void reduceSpellbar() {
+        spellComponent1.SetSize(0f);
+        spellComponent2.SetSize(0f);
+        spellComponent3.SetSize(0f);
+    }
 
+    //update the spell components and tells each bar how many it takes to fill using the enemy weakness spell array
+    public void spellbarUpdate() {
+        spellComponent1.SetSize((float)blueMatches/enemyWeaknessSpell[0]);
+        spellComponent2.SetSize((float)redMatches/enemyWeaknessSpell[3]);
+        spellComponent3.SetSize((float)purpleMatches/enemyWeaknessSpell[4]);
     }
 
     // Updates the display of the inventory for the user
@@ -509,6 +528,7 @@ public class GameManager : MonoBehaviour
 
                 // Check for matches and match
                 match(checkMatch(), firstSelected.GetComponent<GridPosition>().getRow(), firstSelected.GetComponent<GridPosition>().getColumn());
+
 
                 // Set selected as null
                 setFirstSelected(null);
@@ -710,6 +730,9 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        //updates the spell bar 
+        spellbarUpdate();
+
         // Check for next level when enemy dies
         if (enemyHealth == 0.0f) nextLevel();
     }
@@ -738,6 +761,7 @@ public class GameManager : MonoBehaviour
             {
                 crit = true;
                 reduceInventory(); // Reduce inventory on screen and in code
+                reduceSpellbar(); //reduce the crtical bar on screen and in code 
                 damage = 0.40f; // Do critical damage
                 enemyHealth -= damage;
                 // (Zach)Do health bar size change

@@ -5,7 +5,7 @@ using UnityEngine;
 public class healthBar : MonoBehaviour {
 
 
-	private Transform bar;
+	public Transform bar;
 
 	private void Start () {
 	 	bar = transform.Find("Bar");
@@ -13,6 +13,9 @@ public class healthBar : MonoBehaviour {
 	}
 	
 	public void SetSize(float sizeNormailzed){
-		bar.localScale = new Vector3 (sizeNormailzed, 1f);
+        if (sizeNormailzed <= 1f)
+        {
+            bar.localScale = new Vector3(sizeNormailzed, 1f);
+        }
 	}
 }
