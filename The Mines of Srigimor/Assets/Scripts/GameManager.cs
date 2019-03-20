@@ -34,6 +34,7 @@ public class GameManager : MonoBehaviour
     private string enemyName;
     private bool swapping;
     private bool matching;
+    private bool paused;
     private string[] currMatch;
     private string type = "";
     private bool firstIteration = true;
@@ -118,6 +119,7 @@ public class GameManager : MonoBehaviour
         spellComponent3.SetSize(0f);
         swapping = false;
         matching = false;
+        paused = false;
         // Create the starting grid for the level
         createGrid();
     }
@@ -499,6 +501,18 @@ public class GameManager : MonoBehaviour
     public bool getSwap()
     {
         return swapping;
+    }
+
+    // Get paused value
+    public bool getPaused()
+    {
+        return paused;
+    }
+
+    // Set paused value
+    public void setPaused(bool value)
+    {
+        paused = value;
     }
 
     // Get match value
