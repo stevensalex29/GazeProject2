@@ -9,7 +9,7 @@ public class GameSound : MonoBehaviour
     {
         // Destroy menu music if this is first level
         GameObject[] objs = GameObject.FindGameObjectsWithTag("music");
-        if (objs != null) Destroy(objs[0]);
+        if (objs.Length !=0) Destroy(objs[0]);
     }
 
     // Start is called before the first frame update
