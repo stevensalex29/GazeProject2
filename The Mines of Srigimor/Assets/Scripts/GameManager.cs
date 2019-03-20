@@ -17,6 +17,11 @@ public class GameManager : MonoBehaviour
     public GameObject greenJewel;
     public GameObject enemy;
     private AudioSource source;
+    public AudioClip s_Whoosh;
+    public AudioClip s_MagicImpact;
+    public AudioClip s_EnemyAttack;
+    public AudioClip s_MagicTwinkle;
+    public AudioClip s_CriticalHit;
 	private float heroHealth;
 	private float enemyHealth;
     private int currentLevel;
@@ -164,6 +169,8 @@ public class GameManager : MonoBehaviour
             initialFirstPos = firstSelected.transform.position;
             initialSecondPos = secondSelected.transform.position;
             swapping = true;
+
+            source.PlayOneShot(s_Whoosh, 1.0f);
         }
     }
 
@@ -244,6 +251,8 @@ public class GameManager : MonoBehaviour
         updateMatches(componentGrid[getStringRow(match[0])][getStringCol(match[0])].tag);
         currMatch = match;
         matching = true;
+
+        source.PlayOneShot(s_MagicTwinkle);
 
         return true;
     }
@@ -387,6 +396,7 @@ public class GameManager : MonoBehaviour
         if (crit)
         {
             GameObject.Find("PlayerAttack").GetComponent<Text>().text = "Critical spell: + " + damage + " damage";
+            source.PlayOneShot(s_CriticalHit);
         }
         else
         {
@@ -397,6 +407,7 @@ public class GameManager : MonoBehaviour
             {
                 GameObject.Find("PlayerAttack").GetComponent<Text>().text = t + " spell: + " + damage + " damage";
             }
+            source.PlayOneShot(s_MagicImpact);
         }
         
     }
@@ -522,6 +533,9 @@ public class GameManager : MonoBehaviour
                     enemyAttack = 3;
                     int damage = UnityEngine.Random.Range(enemyMinDamage, enemyMaxDamage); // does damage based on enemy script
                     heroHealth -= (float)damage / 100;
+
+                    source.PlayOneShot(s_EnemyAttack);
+
                     // Call gameover is health drops below zero
                     if (heroHealth<= 0.01f)
                     {

@@ -3,7 +3,24 @@ guid: c5ea3b5bd8b5ef243ab4685824a37bf9
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - blueJewel: {instanceID: 0}
+  - orangeJewel: {instanceID: 0}
+  - yellowJewel: {instanceID: 0}
+  - redJewel: {instanceID: 0}
+  - purpleJewel: {instanceID: 0}
+  - greenJewel: {instanceID: 0}
+  - enemy: {instanceID: 0}
+  - s_Whoosh: {fileID: 8300000, guid: c94d6172c69e434408e0356824cb1009, type: 3}
+  - s_MagicImpact: {fileID: 8300000, guid: 667a6d30a66cfc34ebe20d5b990e225a, type: 3}
+  - s_EnemyAttack: {fileID: 8300000, guid: b3f55cc56aac0c94e8a37831f2727bc7, type: 3}
+  - s_MagicTwinkle: {fileID: 8300000, guid: 5c035f4c0bbf61f43ae43c424a74983b, type: 3}
+  - s_CriticalHit: {fileID: 8300000, guid: 8e5dcee11ee90f64cbf395bf35c75e60, type: 3}
+  - healthBar: {instanceID: 0}
+  - healthBarHero: {instanceID: 0}
+  - spellComponent1: {instanceID: 0}
+  - spellComponent2: {instanceID: 0}
+  - spellComponent3: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

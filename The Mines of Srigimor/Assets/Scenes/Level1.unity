@@ -788,6 +788,11 @@ MonoBehaviour:
   greenJewel: {fileID: 2792148606814054173, guid: f6d13ede9c2e23045954243d720ae01c,
     type: 3}
   enemy: {fileID: 269070526058437883, guid: 7bfc55955992b3940a5be04a93636265, type: 3}
+  s_Whoosh: {fileID: 8300000, guid: c94d6172c69e434408e0356824cb1009, type: 3}
+  s_MagicImpact: {fileID: 8300000, guid: 667a6d30a66cfc34ebe20d5b990e225a, type: 3}
+  s_EnemyAttack: {fileID: 8300000, guid: b3f55cc56aac0c94e8a37831f2727bc7, type: 3}
+  s_MagicTwinkle: {fileID: 8300000, guid: 5c035f4c0bbf61f43ae43c424a74983b, type: 3}
+  s_CriticalHit: {fileID: 8300000, guid: 8e5dcee11ee90f64cbf395bf35c75e60, type: 3}
   healthBar: {fileID: 741502038}
   healthBarHero: {fileID: 1905668663}
   spellComponent1: {fileID: 1980703290}
