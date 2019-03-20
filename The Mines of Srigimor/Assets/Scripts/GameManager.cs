@@ -355,16 +355,15 @@ public class GameManager : MonoBehaviour
                 break;
         }
         GameObject.Find("EnemyName").GetComponent<Text>().text = "Enemy: " + enemyName;
-        GameObject.Find("EnemyWeakness").GetComponent<Text>().text = "(Weak against " + enemyWeakness + " spells)";
         string weaknessSpell = "";
         for(int i = 0; i <enemyWeaknessSpell.Length; i++)
         {
-            if (i == 0 && enemyWeaknessSpell[i] != 0) weaknessSpell += " Wizardy: " + enemyWeaknessSpell[i] + " ";
-            if (i == 1 && enemyWeaknessSpell[i] != 0) weaknessSpell += " Theurgy.: " + enemyWeaknessSpell[i] + " ";
-            if (i == 2 && enemyWeaknessSpell[i] != 0) weaknessSpell += " Warlockry: " + enemyWeaknessSpell[i] + " ";
-            if (i == 3 && enemyWeaknessSpell[i] != 0) weaknessSpell += " Demonology: " + enemyWeaknessSpell[i] + " ";
-            if (i == 4 && enemyWeaknessSpell[i] != 0) weaknessSpell += " Witchcraft: " + enemyWeaknessSpell[i] + " ";
-            if (i == 5 && enemyWeaknessSpell[i] != 0) weaknessSpell += " Sorcery: " + enemyWeaknessSpell[i] + " ";
+            if (i == 0 && enemyWeaknessSpell[i] != 0) weaknessSpell +=  enemyWeaknessSpell[i] + "       ";
+            if (i == 1 && enemyWeaknessSpell[i] != 0) weaknessSpell +=  enemyWeaknessSpell[i] + "       ";
+            if (i == 2 && enemyWeaknessSpell[i] != 0) weaknessSpell +=  enemyWeaknessSpell[i] + "       ";
+            if (i == 3 && enemyWeaknessSpell[i] != 0) weaknessSpell +=  enemyWeaknessSpell[i] + "       ";
+            if (i == 4 && enemyWeaknessSpell[i] != 0) weaknessSpell +=  enemyWeaknessSpell[i] + "       ";
+            if (i == 5 && enemyWeaknessSpell[i] != 0) weaknessSpell +=  enemyWeaknessSpell[i] + "       ";
         }
         GameObject.Find("CriticalSpell").GetComponent<Text>().text += " " + weaknessSpell;
     }
@@ -489,7 +488,7 @@ public class GameManager : MonoBehaviour
     // Updates the display of the inventory for the user
     public void updateInventoryDisplay()
     {
-        GameObject.Find("BlueMatches").GetComponent<Text>().text = " " + blueMatches;
+        GameObject.Find("BlueMatches").GetComponent<Text>().text = "" + blueMatches;
         GameObject.Find("YellowMatches").GetComponent<Text>().text = " " + yellowMatches;
         GameObject.Find("PurpleMatches").GetComponent<Text>().text = " " + purpleMatches;
         GameObject.Find("OrangeMatches").GetComponent<Text>().text = " " + orangeMatches;
