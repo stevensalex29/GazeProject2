@@ -107,7 +107,7 @@ public class GameManager : MonoBehaviour
         componentGrid[5] = new GameObject[6];
 		heroHealth = 1.0f;
 		enemyHealth = 1.0f;
-		enemyAttack = 5;
+		enemyAttack = 3;
         spellComponent1.SetSize(0f);
         spellComponent2.SetSize(0f);
         spellComponent3.SetSize(0f);
@@ -519,9 +519,14 @@ public class GameManager : MonoBehaviour
 
                 if (enemyAttack == 0)
                 {
-                    enemyAttack = 5;
+                    enemyAttack = 3;
                     int damage = UnityEngine.Random.Range(enemyMinDamage, enemyMaxDamage); // does damage based on enemy script
                     heroHealth -= (float)damage / 100;
+                    // Call gameover is health drops below zero
+                    if (heroHealth<= 0.01f)
+                    {
+                        SceneManager.LoadScene("GameOver");
+                    }
                     healthBarHero.SetSize(heroHealth);
                     GameObject.Find("EnemyAttackCountText").GetComponent<Text>().text = "Enemy attacked for " + damage + " damage";
                 }

@@ -47,6 +47,15 @@ public class ButtonScript : MonoBehaviour
         GameObject.Find("InstructionManager").GetComponent<InstructionManager>().Previous();
     }
 
+    //Retry the last level
+    public void Retry()
+    {
+        int level = PlayerPrefs.GetInt("currentLevel") + 1;
+        string scene = "Level" + level;
+        SceneManager.LoadScene(scene);
+
+    }
+
     // Quit
     public void Quit()
     {

@@ -1719,7 +1719,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Enemy will attack in 5 moves
+  m_Text: Enemy will attack in 3 moves
 --- !u!222 &752438449
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3140,7 +3140,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -21.485022, y: -12.5}
+  m_AnchoredPosition: {x: -13.7, y: -12.5}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1200739978
@@ -3176,7 +3176,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Spells Casted
+  m_Text: Spells Cast
 --- !u!222 &1200739979
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3561,8 +3561,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -36, y: -8.5}
-  m_SizeDelta: {x: 923.9771, y: 519.49347}
+  m_AnchoredPosition: {x: -35.19, y: -8.1}
+  m_SizeDelta: {x: 936.36, y: 469.29}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1514454752
 MonoBehaviour:
