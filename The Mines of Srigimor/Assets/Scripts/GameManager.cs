@@ -73,7 +73,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         // Instantiate levels
-        levels = new List<string> {"Level1"};
+        levels = new List<string> {"Level1","Level2"};
         Scene currentScene = SceneManager.GetActiveScene(); //reset playerPrefs if at starting level
         string sceneName = currentScene.name;
         if (sceneName == "Level1")
@@ -358,9 +358,22 @@ public class GameManager : MonoBehaviour
     // Gets the enemy data from enemy script
     public void setEnemy(int level)
     {
+        // Load enemy data from enemy script for current level
         GameObject.Instantiate(enemy, new Vector2(0, 0), Quaternion.identity);
+        Scene currentScene = SceneManager.GetActiveScene();
         GameObject enem = GameObject.FindGameObjectWithTag("Enemy");
-        enem.AddComponent<Enemy1>();
+        string sceneName = currentScene.name;
+        switch (sceneName)
+        {
+            case "Level1":
+                enem.AddComponent<Enemy1>();
+                break;
+            case "Level2":
+                enem.AddComponent<Enemy2>();
+                break;
+        }
+
+        // Assign data from enemy script for current level
         switch (level)
         {
             case 1:
@@ -371,17 +384,27 @@ public class GameManager : MonoBehaviour
                 regularPlayerDamage = enem.GetComponent<Enemy1>().getPlayerDamage();
                 enemyName = enem.GetComponent<Enemy1>().getName();
                 break;
+            case 2:
+                enemyMaxDamage = enem.GetComponent<Enemy2>().getMaxDamage();
+                enemyMinDamage = enem.GetComponent<Enemy2>().getMinDamage();
+                enemyWeakness = enem.GetComponent<Enemy2>().getWeakness();
+                enemyWeaknessSpell = enem.GetComponent<Enemy2>().getWeaknessSpell();
+                regularPlayerDamage = enem.GetComponent<Enemy2>().getPlayerDamage();
+                enemyName = enem.GetComponent<Enemy2>().getName();
+                break;
         }
+
+        // Update display with enemy data
         GameObject.Find("EnemyName").GetComponent<Text>().text = "Enemy: " + enemyName;
         string weaknessSpell = "";
         for(int i = 0; i <enemyWeaknessSpell.Length; i++)
         {
-            if (i == 0 && enemyWeaknessSpell[i] != 0) weaknessSpell +=  enemyWeaknessSpell[i] + "       ";
-            if (i == 1 && enemyWeaknessSpell[i] != 0) weaknessSpell +=  enemyWeaknessSpell[i] + "       ";
-            if (i == 2 && enemyWeaknessSpell[i] != 0) weaknessSpell +=  enemyWeaknessSpell[i] + "       ";
-            if (i == 3 && enemyWeaknessSpell[i] != 0) weaknessSpell +=  enemyWeaknessSpell[i] + "       ";
-            if (i == 4 && enemyWeaknessSpell[i] != 0) weaknessSpell +=  enemyWeaknessSpell[i] + "       ";
-            if (i == 5 && enemyWeaknessSpell[i] != 0) weaknessSpell +=  enemyWeaknessSpell[i] + "       ";
+            if (i == 0 && enemyWeaknessSpell[i] != 0) weaknessSpell +=  enemyWeaknessSpell[i] + "      ";
+            if (i == 1 && enemyWeaknessSpell[i] != 0) weaknessSpell +=  enemyWeaknessSpell[i] + "      ";
+            if (i == 2 && enemyWeaknessSpell[i] != 0) weaknessSpell +=  enemyWeaknessSpell[i] + "      ";
+            if (i == 3 && enemyWeaknessSpell[i] != 0) weaknessSpell +=  enemyWeaknessSpell[i] + "      ";
+            if (i == 4 && enemyWeaknessSpell[i] != 0) weaknessSpell +=  enemyWeaknessSpell[i] + "      ";
+            if (i == 5 && enemyWeaknessSpell[i] != 0) weaknessSpell +=  enemyWeaknessSpell[i] + "      ";
         }
         GameObject.Find("CriticalSpell").GetComponent<Text>().text += " " + weaknessSpell;
     }
@@ -498,9 +521,22 @@ public class GameManager : MonoBehaviour
 
     //update the spell components and tells each bar how many it takes to fill using the enemy weakness spell array
     public void spellbarUpdate() {
-        spellComponent1.SetSize((float)blueMatches/enemyWeaknessSpell[0]);
-        spellComponent2.SetSize((float)redMatches/enemyWeaknessSpell[3]);
-        spellComponent3.SetSize((float)purpleMatches/enemyWeaknessSpell[4]);
+        Scene currentScene = SceneManager.GetActiveScene(); //reset playerPrefs if at starting level
+        string sceneName = currentScene.name;
+        switch (sceneName)
+        {
+            case "Level1":
+                spellComponent1.SetSize((float)blueMatches / enemyWeaknessSpell[0]);
+                spellComponent2.SetSize((float)redMatches / enemyWeaknessSpell[3]);
+                spellComponent3.SetSize((float)purpleMatches / enemyWeaknessSpell[4]);
+                break;
+            case "Level2":
+                spellComponent1.SetSize((float)orangeMatches / enemyWeaknessSpell[1]);
+                spellComponent2.SetSize((float)yellowMatches / enemyWeaknessSpell[2]);
+                spellComponent3.SetSize((float)greenMatches / enemyWeaknessSpell[5]);
+                break;
+        }
+        
     }
 
     // Updates the display of the inventory for the user
@@ -812,7 +848,7 @@ public class GameManager : MonoBehaviour
             bool crit = false;
             if (checkDamageWeakness(type) && !checkCritical()) // If weakness spell cast and critical not met, do weakness damage
             {
-                damage = regularPlayerDamage + 0.10f;
+                damage = regularPlayerDamage + 0.05f;
                 enemyHealth -= damage;
             }
             else if (!checkDamageWeakness(type) && !checkCritical()) // If weakness spell not cast and critical not met, do regular damage
