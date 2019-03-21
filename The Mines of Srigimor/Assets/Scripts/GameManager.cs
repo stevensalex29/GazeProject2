@@ -578,7 +578,7 @@ public class GameManager : MonoBehaviour
 
                 // Check for matches and match
                 match(checkMatch(), firstSelected.GetComponent<GridPosition>().getRow(), firstSelected.GetComponent<GridPosition>().getColumn());
-
+                match(checkMatch(), secondSelected.GetComponent<GridPosition>().getRow(), secondSelected.GetComponent<GridPosition>().getColumn());
 
                 // Set selected as null
                 setFirstSelected(null);
