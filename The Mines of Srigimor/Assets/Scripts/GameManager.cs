@@ -79,7 +79,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         // Instantiate levels
-        levels = new List<string> {"Level1","Level2"};
+        levels = new List<string> {"Level1","Level2","Level3"};
         Scene currentScene = SceneManager.GetActiveScene(); //reset playerPrefs if at starting level
         string sceneName = currentScene.name;
         if (sceneName == "Level1")
@@ -383,6 +383,9 @@ public class GameManager : MonoBehaviour
             case "Level2":
                 enem.AddComponent<Enemy2>();
                 break;
+            case "Level3":
+                enem.AddComponent<Enemy3>();
+                break;
         }
 
         // Assign data from enemy script for current level
@@ -403,6 +406,14 @@ public class GameManager : MonoBehaviour
                 enemyWeaknessSpell = enem.GetComponent<Enemy2>().getWeaknessSpell();
                 regularPlayerDamage = enem.GetComponent<Enemy2>().getPlayerDamage();
                 enemyName = enem.GetComponent<Enemy2>().getName();
+                break;
+            case 3:
+                enemyMaxDamage = enem.GetComponent<Enemy3>().getMaxDamage();
+                enemyMinDamage = enem.GetComponent<Enemy3>().getMinDamage();
+                enemyWeakness = enem.GetComponent<Enemy3>().getWeakness();
+                enemyWeaknessSpell = enem.GetComponent<Enemy3>().getWeaknessSpell();
+                regularPlayerDamage = enem.GetComponent<Enemy3>().getPlayerDamage();
+                enemyName = enem.GetComponent<Enemy3>().getName();
                 break;
         }
 
@@ -546,6 +557,11 @@ public class GameManager : MonoBehaviour
                 spellComponent1.SetSize((float)orangeMatches / enemyWeaknessSpell[1]);
                 spellComponent2.SetSize((float)yellowMatches / enemyWeaknessSpell[2]);
                 spellComponent3.SetSize((float)greenMatches / enemyWeaknessSpell[5]);
+                break;
+            case "Level3":
+                spellComponent1.SetSize((float)blueMatches / enemyWeaknessSpell[0]);
+                spellComponent2.SetSize((float)yellowMatches / enemyWeaknessSpell[2]);
+                spellComponent3.SetSize((float)purpleMatches / enemyWeaknessSpell[4]);
                 break;
         }
         

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy2 : MonoBehaviour
+public class Enemy3 : MonoBehaviour
 {
     //Attribute 
     private string weakness;
@@ -14,12 +14,12 @@ public class Enemy2 : MonoBehaviour
 
     private void Awake()
     {
-        weakness = "sorcery";
-        maxDamage = 15;
-        minDamage = 10;
-        weaknessSpell = new int[] { 0, 2, 2, 0, 0, 3 };
-        regularPlayerDamage = 0.04f;
-        name = "Dragon";
+        weakness = "warlockery";
+        maxDamage = 20;
+        minDamage = 15;
+        weaknessSpell = new int[] { 1, 0, 3, 0, 2, 0 };
+        regularPlayerDamage = 0.03f;
+        name = "Demon";
     }
 
     // Start is called before the first frame update
