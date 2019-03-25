@@ -22,7 +22,13 @@ public class GameManager : MonoBehaviour
     public AudioClip s_EnemyAttack;
     public AudioClip s_MagicTwinkle;
     public AudioClip s_CriticalHit;
-	private float heroHealth;
+    public particleLauncher pLaunchRed;
+    public particleLauncher pLaunchBlue;
+    public particleLauncher pLaunchGreen;
+    public particleLauncher pLaunchYellow;
+    public particleLauncher pLaunchPurple;
+    public particleLauncher pLaunchOrange;
+    private float heroHealth;
 	private float enemyHealth;
     private int currentLevel;
 	private int enemyAttack;
@@ -235,26 +241,32 @@ public class GameManager : MonoBehaviour
         {
             case "blue":
                 blueMatches++;
+                pLaunchBlue.startParticle();
                 GameObject.Find("BlueMatches").GetComponent<Text>().text = "" + blueMatches;
                 break;
             case "yellow":
                 yellowMatches++;
+                pLaunchYellow.startParticle();
                 GameObject.Find("YellowMatches").GetComponent<Text>().text = "" + yellowMatches;
                 break;
             case "purple":
                 purpleMatches++;
+                pLaunchPurple.startParticle();
                 GameObject.Find("PurpleMatches").GetComponent<Text>().text = "" + purpleMatches;
                 break;
             case "orange":
                 orangeMatches++;
+                pLaunchOrange.startParticle();
                 GameObject.Find("OrangeMatches").GetComponent<Text>().text = "" + orangeMatches;
                 break;
             case "green":
                 greenMatches++;
+                pLaunchGreen.startParticle();
                 GameObject.Find("GreenMatches").GetComponent<Text>().text = "" + greenMatches;
                 break;
             case "red":
                 redMatches++;
+                pLaunchRed.startParticle();
                 GameObject.Find("RedMatches").GetComponent<Text>().text = "" + redMatches;
                 break;
         }
@@ -812,7 +824,8 @@ public class GameManager : MonoBehaviour
                     matching = false;
                     enemyDamage(type);
                     firstIteration = true;
-                } 
+                }
+               
             }
             // If finished matching and there are still more matches, match again
             if (matching == false)

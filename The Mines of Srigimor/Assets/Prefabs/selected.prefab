@@ -78,7 +78,7 @@ SpriteRenderer:
   m_Size: {x: 2.56, y: 2.56}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!82 &7716360342372868908
@@ -184,11 +184,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1751151878395580839}
     m_Modifications:
-    - target: {fileID: 918706318713601040, guid: b90c4c95529f82b4e9de67350c0559de,
-        type: 3}
-      propertyPath: m_Name
-      value: Glow Particle Effect
-      objectReference: {fileID: 0}
     - target: {fileID: 9046148399671486257, guid: b90c4c95529f82b4e9de67350c0559de,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -243,6 +238,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 918706318713601040, guid: b90c4c95529f82b4e9de67350c0559de,
+        type: 3}
+      propertyPath: m_Name
+      value: Glow Particle Effect
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b90c4c95529f82b4e9de67350c0559de, type: 3}
