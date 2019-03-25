@@ -28,6 +28,7 @@ public class GameManager : MonoBehaviour
     public particleLauncher pLaunchYellow;
     public particleLauncher pLaunchPurple;
     public particleLauncher pLaunchOrange;
+    public particleLauncher pLaunchCritical;
     private float heroHealth;
 	private float enemyHealth;
     private int currentLevel;
@@ -462,6 +463,7 @@ public class GameManager : MonoBehaviour
         {
             GameObject.Find("PlayerAttack").GetComponent<Text>().text = "Critical spell: + " + damage + " damage";
             source.PlayOneShot(s_CriticalHit);
+            pLaunchCritical.startParticle();
         }
         else
         {
