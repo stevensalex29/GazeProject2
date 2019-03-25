@@ -846,7 +846,7 @@ public class GameManager : MonoBehaviour
         spellbarUpdate();
 
         // Check for next level when enemy dies
-        if (enemyHealth == 0.0f) nextLevel();
+        if (enemyHealth <= 0.01f) nextLevel();
     }
 
 
