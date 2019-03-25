@@ -56,6 +56,12 @@ public class ButtonScript : MonoBehaviour
         GameObject.Find("InstructionManager").GetComponent<InstructionManager>().Previous();
     }
 
+    // Credits
+    public void Credits()
+    {
+        SceneManager.LoadScene("Credits");
+    }
+
     // Retry the last level
     public void Retry()
     {
